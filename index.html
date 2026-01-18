@@ -33,6 +33,7 @@ header {
   padding: 22px;
 }
 header h1 { margin: 0; font-size: 1.7rem; }
+header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.85; }
 .container {
   padding: 18px;
   max-width: 920px;
@@ -47,9 +48,11 @@ header h1 { margin: 0; font-size: 1.7rem; }
   margin-bottom: 20px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   animation: fadeUp 0.4s ease-out;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+.card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
 .card h2 {
-  margin: 0;
+  margin: 0 0 10px;
   font-size: 1.25rem;
   border-left: 4px solid var(--gold);
   padding-left: 8px;
@@ -133,7 +136,7 @@ button:hover {
   <select id="intake">
     <option value="roller">Roller</option>
     <option value="pneumatic">Pneumatic</option>
-    <option value="overbelly">Underbelly</option>
+    <option value="underbelly">Underbelly</option>
     <option value="other">Other</option>
   </select>
   <input id="intakeOther" placeholder="Specify intake" hidden>
@@ -230,47 +233,59 @@ button:hover {
 </div>
 
 <script>
-// Show “Other” input fields
+// Show “Other” inputs
 function toggleOther(selId, otherId) {
   const sel = document.getElementById(selId);
   const other = document.getElementById(otherId);
-  if (sel && other && sel.value === "other") {
-    other.hidden = false;
-  } else if (other) {
-    other.hidden = true;
-    other.value = "";
-  }
+  sel.addEventListener("change", () => {
+    other.hidden = sel.value !== "other";
+    if (other.hidden) other.value = "";
+  });
 }
+toggleOther("intake","intakeOther");
+toggleOther("scoringMethod","scoringOther");
+toggleOther("autoType","autoTypeOther");
+toggleOther("sensors","sensorsOther");
 
-document.getElementById("intake").onchange = () => toggleOther("intake","intakeOther");
-document.getElementById("scoringMethod").onchange = () => toggleOther("scoringMethod","scoringOther");
-document.getElementById("autoType").onchange = () => toggleOther("autoType","autoTypeOther");
-document.getElementById("sensors").onchange = () => toggleOther("sensors","sensorsOther");
-
-// Auto path drawing
+// Canvas drawing
 const canvas = document.getElementById("autoCanvas");
 const ctx = canvas.getContext("2d");
+ctx.strokeStyle = "#1FBFB8"; 
+ctx.lineWidth = 2;
 let drawing = false;
-canvas.onmousedown = () => drawing = true;
-canvas.onmouseup = () => drawing = false;
-canvas.onmouseleave = () => drawing = false;
-canvas.onmousemove = e => {
-  if (!drawing) return;
+
+function getMousePos(e) {
   const rect = canvas.getBoundingClientRect();
-  ctx.lineTo(e.clientX-rect.left, e.clientY-rect.top);
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+canvas.addEventListener("mousedown", e => {
+  drawing = true;
+  const pos = getMousePos(e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+});
+
+canvas.addEventListener("mousemove", e => {
+  if (!drawing) return;
+  const pos = getMousePos(e);
+  ctx.lineTo(pos.x, pos.y);
   ctx.stroke();
-};
+});
+
+canvas.addEventListener("mouseup", () => drawing = false);
+canvas.addEventListener("mouseleave", () => drawing = false);
 
 // Photo preview
-const photoInput = document.getElementById("photo");
-photoInput.onchange = () => {
-  const file = photoInput.files[0];
+document.getElementById("photo").addEventListener("change", () => {
+  const file = document.getElementById("photo").files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => document.getElementById("photoPreview").src = reader.result;
   reader.readAsDataURL(file);
-};
+});
 
+// Generate QR
 function generateQR() {
   const teamNum = document.getElementById("team").value;
   if (!teamNum) return alert("Please enter Team Number!");
@@ -278,33 +293,23 @@ function generateQR() {
   const autoPath = canvas.toDataURL();
   const data = {
     team: teamNum,
-    robotName: document.getElementById("robotName").value,
+    robotName: document.getElementById("robotName").value || "",
     intake: document.getElementById("intakeOther").value || document.getElementById("intake").value,
     scoring: document.getElementById("scoringOther").value || document.getElementById("scoringMethod").value,
-    hopperCapacity: document.getElementById("hopperCapacity").value,
-    bump: document.getElementById("bump").value,
-    trench: document.getElementById("trench").value,
+    hopperCapacity: document.getElementById("hopperCapacity").value || 0,
+    bump: document.getElementById("bump").value || "no",
+    trench: document.getElementById("trench").value || "no",
     auto: {
-      start: document.getElementById("autoStart").value,
-      preload: document.getElementById("preloadFuel").value,
-      score: document.getElementById("autoScore").value,
-      strategy: document.getElementById("autoTypeOther").value || document.getElementById("autoType").value,
-      sensors: document.getElementById("sensorsOther").value || document.getElementById("sensors").value,
+      start: document.getElementById("autoStart").value || "",
+      preload: document.getElementById("preloadFuel").value || 0,
+      score: document.getElementById("autoScore").value || 0,
+      strategy: document.getElementById("autoTypeOther").value || document.getElementById("autoType").value || "",
+      sensors: document.getElementById("sensorsOther").value || document.getElementById("sensors").value || "",
       path: autoPath
     },
-    notes: document.getElementById("notes").value,
+    notes: document.getElementById("notes").value || "",
     timestamp: Date.now()
   };
-
-  console.log("QR data:", data); // debug
-
-  document.getElementById("qrcode").innerHTML = "";
-  new QRCode(document.getElementById("qrcode"), {
-    text: JSON.stringify(data),
-    width: 240,
-    height: 240
-  });
-}
 
   document.getElementById("qrcode").innerHTML = "";
   new QRCode(document.getElementById("qrcode"), {
