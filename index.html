@@ -272,9 +272,12 @@ photoInput.onchange = () => {
 };
 
 function generateQR() {
-  const autoPath = canvas.toDataURL(); // base64 image
+  const teamNum = document.getElementById("team").value;
+  if (!teamNum) return alert("Please enter Team Number!");
+
+  const autoPath = canvas.toDataURL();
   const data = {
-    team: document.getElementById("team").value,
+    team: teamNum,
     robotName: document.getElementById("robotName").value,
     intake: document.getElementById("intakeOther").value || document.getElementById("intake").value,
     scoring: document.getElementById("scoringOther").value || document.getElementById("scoringMethod").value,
@@ -292,6 +295,16 @@ function generateQR() {
     notes: document.getElementById("notes").value,
     timestamp: Date.now()
   };
+
+  console.log("QR data:", data); // debug
+
+  document.getElementById("qrcode").innerHTML = "";
+  new QRCode(document.getElementById("qrcode"), {
+    text: JSON.stringify(data),
+    width: 240,
+    height: 240
+  });
+}
 
   document.getElementById("qrcode").innerHTML = "";
   new QRCode(document.getElementById("qrcode"), {
