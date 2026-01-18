@@ -18,6 +18,7 @@
   --active-btn: linear-gradient(135deg,#B87333,#E6C08A);
 }
 
+/* GLOBAL */
 * { box-sizing: border-box; margin:0; padding:0; font-family:'Lexend', sans-serif; }
 
 body {
@@ -25,6 +26,7 @@ body {
   background-size: cover;
 }
 
+/* HEADER */
 header {
   background: linear-gradient(135deg, #2B1F12, #5A3E25);
   color: var(--highlight);
@@ -35,6 +37,7 @@ header {
 
 header h1 { font-family: 'Times New Roman', serif; letter-spacing:2px; text-transform:uppercase; text-shadow: 2px 2px #000; }
 
+/* CONTAINER & CARD */
 .container { max-width: 900px; margin: 24px auto; padding:16px; }
 
 .card {
@@ -56,20 +59,50 @@ input, textarea, select {
   width:100%;
   padding:10px;
   margin-top:6px;
-  border-radius:8px;
-  border:1px solid #7A6348;
+  border-radius:12px;
+  border:none;
+  background: rgba(255,255,255,0.3); /* semi-transparent frosted glass */
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
+  font-weight:500;
 }
 
 input:focus, textarea:focus, select:focus {
-  border-color: var(--clay);
-  box-shadow:0 0 8px rgba(184,115,51,0.5);
   outline:none;
+  border:1px solid var(--clay);
+  box-shadow: 0 8px 20px rgba(184,115,51,0.4);
+  transform: scale(1.02);
 }
 
+/* APPLE-LIKE DROPDOWN */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  padding-right: 30px;
+  position: relative;
+  transition: all 0.35s ease;
+}
+
+select:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.02);
+}
+
+select option {
+  background: #fff;
+  color: #3E2F1C;
+}
+
+/* CHECKBOX & RADIO */
 .checkbox-inline, .radio-inline { display:inline-flex; align-items:center; gap:6px; margin-right:15px; font-weight:normal; }
 .checkbox-inline input { cursor:pointer; transform: scale(1.2); }
 
+/* BUTTONS & TOGGLES */
 .toggle { display:flex; gap:10px; margin-top:6px; }
 .toggle button { flex:1; padding:6px 12px; border-radius:8px; border:2px solid #7A6348; cursor:pointer; transition: all 0.3s ease; }
 .toggle button.active { background: var(--active-btn); color:#fff; }
@@ -81,6 +114,7 @@ input:focus, textarea:focus, select:focus {
 
 .other-input {margin-top:6px; display:none;}
 </style>
+
 </head>
 
 <body>
