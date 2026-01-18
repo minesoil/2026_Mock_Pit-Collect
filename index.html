@@ -67,8 +67,8 @@ input:focus, textarea:focus, select:focus {
   outline:none;
 }
 
-.checkbox-inline, .radio-inline { display:inline-flex; align-items:center; gap:10px; margin-right:15px; font-weight:normal; }
-.checkbox-inline input { margin-right:6px; transform: scale(1.2); cursor:pointer; }
+.checkbox-inline, .radio-inline { display:inline-flex; align-items:center; gap:6px; margin-right:15px; font-weight:normal; }
+.checkbox-inline input { cursor:pointer; transform: scale(1.2); }
 
 .toggle { display:flex; gap:10px; margin-top:6px; }
 .toggle button { flex:1; padding:6px 12px; border-radius:8px; border:2px solid #7A6348; cursor:pointer; transition: all 0.3s ease; }
@@ -77,7 +77,7 @@ input:focus, textarea:focus, select:focus {
 .main-btn { width:100%; padding:14px; font-weight:bold; border-radius:14px; background: var(--active-btn); border:none; cursor:pointer; transition: all 0.3s ease; }
 .main-btn:hover { transform: scale(1.05); }
 
-#qrcode { width:200px; height:200px; margin:0 auto 20px auto; background:white; padding:8px; border-radius:12px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3); }
+#qrcode { width:180px; height:180px; margin:0 auto 20px auto; background:white; padding:8px; border-radius:12px; display:block; box-shadow:0 4px 15px rgba(0,0,0,0.3); }
 
 .other-input {margin-top:6px; display:none;}
 </style>
@@ -189,6 +189,20 @@ function checkOther(sel){
   otherInput.style.display = sel.value==="O"?"block":"none";
 }
 
+// Ladder logic
+const ladderNA = document.getElementById("ladderNA");
+const ladderCheckboxes = ["ladder1","ladder2","ladder3"].map(id=>document.getElementById(id));
+
+ladderNA.addEventListener("change", ()=>{
+  if(ladderNA.checked) ladderCheckboxes.forEach(cb=>cb.checked=false);
+});
+
+ladderCheckboxes.forEach(cb=>{
+  cb.addEventListener("change", ()=>{
+    if(cb.checked) ladderNA.checked=false;
+  });
+});
+
 function getCheckedValues(selector){
   return [...document.querySelectorAll(selector + " input:checked")].map(i=>i.value);
 }
@@ -198,7 +212,7 @@ function generateQR(){
 
   let ladderVals = [];
   ["ladder1","ladder2","ladder3","ladderNA"].forEach(id=>{
-    const c = document.getElementById(id); if(c.checked) ladderVals.push(c.value);
+    const c=document.getElementById(id); if(c.checked) ladderVals.push(c.value);
   });
 
   let traversalVals=[];
@@ -235,7 +249,7 @@ function generateQR(){
   };
 
   qrcode.innerHTML="";
-  new QRCode(qrcode,{text:JSON.stringify(data),width:180,height:180}); // smaller QR
+  new QRCode(qrcode,{text:JSON.stringify(data),width:180,height:180});
 }
 </script>
 </body>
