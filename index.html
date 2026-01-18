@@ -14,54 +14,56 @@
   --navy: #0B1C2D;
   --gold: #F5B700;
   --teal: #1FBFB8;
-  --light-bg: #ea572e;
+  --light-bg: #F4F7FA;
   --card-bg: #FFFFFF;
 }
 
 /* GLOBAL */
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin:0; padding:0; font-family: "Inter", sans-serif; }
 body {
-  margin: 0;
-  background: var(--light-bg);
-  font-family: "Inter", sans-serif;
+  background: radial-gradient(circle at top left, #0B1C2D, #12304A, #1FBFB8);
   color: var(--navy);
+  min-height: 100vh;
 }
 header {
-  background: linear-gradient(135deg, var(--navy), #0F2341);
+  background: linear-gradient(135deg, #0B1C2D, #12304A, #1FBFB8);
   color: white;
   text-align: center;
-  padding: 22px;
+  padding: 24px 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25);
 }
-header h1 { margin: 0; font-size: 1.7rem; }
-header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.85; }
+header h1 { margin-bottom:4px; font-size: 1.8rem; }
+header p { font-size: 0.95rem; opacity: 0.85; }
+
 .container {
-  padding: 18px;
-  max-width: 920px;
-  margin: auto;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 16px;
 }
 
 /* CARDS */
 .card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  padding: 16px 20px;
+  background: linear-gradient(145deg, #FFFFFF, #e1e7f0);
+  border-radius: 16px;
+  padding: 18px 22px;
   margin-bottom: 20px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  animation: fadeUp 0.4s ease-out;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+  animation: fadeUp 0.5s ease-out;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+.card:hover { transform: translateY(-3px); box-shadow: 0 15px 28px rgba(0,0,0,0.18); }
 .card h2 {
-  margin: 0 0 10px;
-  font-size: 1.25rem;
-  border-left: 4px solid var(--gold);
-  padding-left: 8px;
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+  border-left: 5px solid var(--gold);
+  padding-left: 10px;
 }
 
 /* FIELDS */
 label { margin-top: 12px; display: block; font-size: 14px; }
 input, select, textarea {
-  width: 100%; margin-top: 6px;
+  width: 100%;
+  margin-top: 6px;
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -97,12 +99,31 @@ button:hover {
   border: 2px dashed var(--teal);
   border-radius: 8px;
   cursor: crosshair;
+  margin-top: 8px;
+}
+
+/* PHOTO */
+#photoPreview {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 10px;
 }
 
 /* QR */
-#qrcode { margin-top: 18px; text-align: center; }
+#qrcode {
+  width: 250px;
+  height: 250px;
+  margin: 18px auto;
+  display: block;
+  background: white;
+  border-radius: 12px;
+}
+#qrcode canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
 
-/* TRANSITIONS */
+/* ANIMATIONS */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -140,7 +161,7 @@ button:hover {
     <option value="other">Other</option>
   </select>
   <input id="intakeOther" placeholder="Specify intake" hidden>
-  
+
   <label>Scoring Method</label>
   <select id="scoringMethod">
     <option value="direct shoot">Direct Shoot</option>
@@ -221,7 +242,7 @@ button:hover {
 <div class="card">
   <h2>Robot Photo</h2>
   <input id="photo" type="file" accept="image/*" capture="environment">
-  <img id="photoPreview" style="width:100%; margin-top:10px; border-radius:10px;">
+  <img id="photoPreview">
 </div>
 
 <!-- GENERATE -->
@@ -233,7 +254,7 @@ button:hover {
 </div>
 
 <script>
-// Show “Other” inputs
+// Show “Other” inputs dynamically
 function toggleOther(selId, otherId) {
   const sel = document.getElementById(selId);
   const other = document.getElementById(otherId);
@@ -253,26 +274,22 @@ const ctx = canvas.getContext("2d");
 ctx.strokeStyle = "#1FBFB8"; 
 ctx.lineWidth = 2;
 let drawing = false;
-
 function getMousePos(e) {
   const rect = canvas.getBoundingClientRect();
   return { x: e.clientX - rect.left, y: e.clientY - rect.top };
 }
-
 canvas.addEventListener("mousedown", e => {
   drawing = true;
   const pos = getMousePos(e);
   ctx.beginPath();
   ctx.moveTo(pos.x, pos.y);
 });
-
 canvas.addEventListener("mousemove", e => {
   if (!drawing) return;
   const pos = getMousePos(e);
   ctx.lineTo(pos.x, pos.y);
   ctx.stroke();
 });
-
 canvas.addEventListener("mouseup", () => drawing = false);
 canvas.addEventListener("mouseleave", () => drawing = false);
 
