@@ -9,13 +9,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-/* COLORS */
 :root {
   --navy: #0B1C2D;
   --gold: #F5B700;
   --teal: #1FBFB8;
-  --light-bg: #F4F7FA;
-  --card-bg: #FFFFFF;
 }
 
 /* GLOBAL */
@@ -35,11 +32,7 @@ header {
 header h1 { margin-bottom:4px; font-size: 1.8rem; }
 header p { font-size: 0.95rem; opacity: 0.85; }
 
-.container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 0 16px;
-}
+.container { max-width: 900px; margin: 20px auto; padding: 0 16px; }
 
 /* CARDS */
 .card {
@@ -48,16 +41,10 @@ header p { font-size: 0.95rem; opacity: 0.85; }
   padding: 18px 22px;
   margin-bottom: 20px;
   box-shadow: 0 10px 28px rgba(0,0,0,0.12);
-  animation: fadeUp 0.5s ease-out;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 .card:hover { transform: translateY(-3px); box-shadow: 0 15px 28px rgba(0,0,0,0.18); }
-.card h2 {
-  margin-bottom: 12px;
-  font-size: 1.3rem;
-  border-left: 5px solid var(--gold);
-  padding-left: 10px;
-}
+.card h2 { margin-bottom: 12px; font-size: 1.3rem; border-left: 5px solid var(--gold); padding-left: 10px; }
 
 /* FIELDS */
 label { margin-top: 12px; display: block; font-size: 14px; }
@@ -94,20 +81,8 @@ button:hover {
   box-shadow: 0 8px 22px rgba(31,191,184,0.35);
 }
 
-/* CANVAS */
-#autoCanvas {
-  border: 2px dashed var(--teal);
-  border-radius: 8px;
-  cursor: crosshair;
-  margin-top: 8px;
-}
-
 /* PHOTO */
-#photoPreview {
-  width: 100%;
-  margin-top: 10px;
-  border-radius: 10px;
-}
+#photoPreview { width: 100%; margin-top: 10px; border-radius: 10px; }
 
 /* QR */
 #qrcode {
@@ -118,16 +93,7 @@ button:hover {
   background: white;
   border-radius: 12px;
 }
-#qrcode canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* ANIMATIONS */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+#qrcode canvas { width: 100% !important; height: 100% !important; }
 </style>
 </head>
 
@@ -226,10 +192,6 @@ button:hover {
     <option value="other">Other</option>
   </select>
   <input id="sensorsOther" placeholder="Specify sensor" hidden>
-
-  <label>Draw Auto Path</label>
-  <canvas id="autoCanvas" width="350" height="220"></canvas>
-  <div class="hint">Draw intended auton movement (touch or mouse)</div>
 </div>
 
 <!-- NOTES -->
@@ -268,31 +230,6 @@ toggleOther("scoringMethod","scoringOther");
 toggleOther("autoType","autoTypeOther");
 toggleOther("sensors","sensorsOther");
 
-// Canvas drawing
-const canvas = document.getElementById("autoCanvas");
-const ctx = canvas.getContext("2d");
-ctx.strokeStyle = "#1FBFB8"; 
-ctx.lineWidth = 2;
-let drawing = false;
-function getMousePos(e) {
-  const rect = canvas.getBoundingClientRect();
-  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-}
-canvas.addEventListener("mousedown", e => {
-  drawing = true;
-  const pos = getMousePos(e);
-  ctx.beginPath();
-  ctx.moveTo(pos.x, pos.y);
-});
-canvas.addEventListener("mousemove", e => {
-  if (!drawing) return;
-  const pos = getMousePos(e);
-  ctx.lineTo(pos.x, pos.y);
-  ctx.stroke();
-});
-canvas.addEventListener("mouseup", () => drawing = false);
-canvas.addEventListener("mouseleave", () => drawing = false);
-
 // Photo preview
 document.getElementById("photo").addEventListener("change", () => {
   const file = document.getElementById("photo").files[0];
@@ -302,22 +239,10 @@ document.getElementById("photo").addEventListener("change", () => {
   reader.readAsDataURL(file);
 });
 
-// Helper to resize canvas image for QR
-function getResizedCanvasDataURL(srcCanvas, maxWidth = 150, maxHeight = 100) {
-  const tmp = document.createElement("canvas");
-  const ratio = Math.min(maxWidth/srcCanvas.width, maxHeight/srcCanvas.height);
-  tmp.width = srcCanvas.width * ratio;
-  tmp.height = srcCanvas.height * ratio;
-  tmp.getContext("2d").drawImage(srcCanvas, 0, 0, tmp.width, tmp.height);
-  return tmp.toDataURL();
-}
-
 // Generate QR
 function generateQR() {
   const teamNum = document.getElementById("team").value;
   if (!teamNum) return alert("Please enter Team Number!");
-
-  const autoPath = getResizedCanvasDataURL(canvas); // resized
 
   const data = {
     team: teamNum,
@@ -332,8 +257,7 @@ function generateQR() {
       preload: document.getElementById("preloadFuel").value || 0,
       score: document.getElementById("autoScore").value || 0,
       strategy: document.getElementById("autoTypeOther").value || document.getElementById("autoType").value || "",
-      sensors: document.getElementById("sensorsOther").value || document.getElementById("sensors").value || "",
-      path: autoPath
+      sensors: document.getElementById("sensorsOther").value || document.getElementById("sensors").value || ""
     },
     notes: document.getElementById("notes").value || "",
     timestamp: Date.now()
