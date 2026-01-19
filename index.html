@@ -277,7 +277,8 @@ function generateQR(){
     mech:{i:intake.value,o:output.value,ap:autoPreload.value,c:capacity.value},
     auto:{s:getChecked("startPos"),st:autoStrat.value,e:autoEstScore.value},
     n:notes.value,
-    ts:Date.now()
+    ts: new Date().toLocaleString()
+
   };
 
   qrcode.innerHTML="";
