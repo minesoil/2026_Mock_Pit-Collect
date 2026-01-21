@@ -74,7 +74,6 @@ input, textarea, select {
   color: var(--earth);
 }
 
-/* ✅ Checkbox layout */
 .checkbox-inline {
   display: flex;
   gap: 16px;
@@ -152,10 +151,10 @@ input, textarea, select {
 
     <label>Ladder</label>
     <div class="checkbox-inline">
-      <label class="check"><input type="checkbox" id="ladder1">1</label>
-      <label class="check"><input type="checkbox" id="ladder2">2</label>
-      <label class="check"><input type="checkbox" id="ladder3">3</label>
-      <label class="check"><input type="checkbox" id="ladderNA">N/A</label>
+      <label class="check"><input type="checkbox" id="ladder1" value="1"><span>1</span></label>
+      <label class="check"><input type="checkbox" id="ladder2" value="2"><span>2</span></label>
+      <label class="check"><input type="checkbox" id="ladder3" value="3"><span>3</span></label>
+      <label class="check"><input type="checkbox" id="ladderNA" value="N"><span>N/A</span></label>
     </div>
   </div>
 
@@ -184,7 +183,7 @@ function prevPage() {
   if (currentPage > 0) showPage(--currentPage);
 }
 
-/*  Ladder N/A logic */
+/* Ladder N/A logic */
 const ladderNA = document.getElementById("ladderNA");
 const ladderOthers = [
   document.getElementById("ladder1"),
@@ -193,9 +192,7 @@ const ladderOthers = [
 ];
 
 ladderNA.addEventListener("change", () => {
-  if (ladderNA.checked) {
-    ladderOthers.forEach(cb => cb.checked = false);
-  }
+  if (ladderNA.checked) ladderOthers.forEach(cb => cb.checked = false);
 });
 
 ladderOthers.forEach(cb => {
