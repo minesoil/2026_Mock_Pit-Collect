@@ -167,14 +167,17 @@ input, textarea, select {
     <h2>Scouter Info</h2>
     <label>Scouter Name</label>
     <input id="scouterName">
+
     <label>Team Number</label>
-    <input id="teamNumber" type="number">
+    <select id="teamNumber">
+      <option value="">--Select Team--</option>
+    </select>
   </div>
   <button class="main-btn" onclick="nextPage()">Next</button>
 </div>
 
 <!-- PAGE 2 -->
-<div class="page">
+<div class="page" id="page2">
   <div class="card">
     <h2>Mechanical Systems</h2>
     <label>Intake</label>
@@ -192,13 +195,14 @@ input, textarea, select {
       <option value="P">Pass</option>
     </select>
 
-    <label>Auto Preload</label>
-    <input id="autoPreload" type="number">
-    <label>Capacity</label>
-    <input id="capacity" type="number">
+    <label>Auto Preload (max 8)</label>
+    <input id="autoPreload" type="number" min="0" max="8">
+
+    <label>Capacity (max 20)</label>
+    <input id="capacity" type="number" min="0" max="20">
 
     <label>Ladder</label>
-    <div class="checkbox-inline">
+    <div class="checkbox-inline" id="ladderCheckboxes">
       <label><input type="checkbox" value="1"> 1</label>
       <label><input type="checkbox" value="2"> 2</label>
       <label><input type="checkbox" value="3"> 3</label>
@@ -266,7 +270,7 @@ input, textarea, select {
     </div>
 
     <label>Auto Est Score</label>
-    <input id="autoEstScore" type="number">
+    <input id="autoEstScore" type="number" min="0" max="100">
   </div>
 
   <div class="nav-buttons">
@@ -298,12 +302,30 @@ input, textarea, select {
 </div>
 
 <script>
+// Team list for 2026mslr
+const mslsTeams = [
+364,456,538,590,1421,1912,1927,2221,2556,3039,
+3616,3753,4087,4107,4336,5863,5971,6184,6489,
+6706,6998,7094,7474,8044,8624,8808,9153,9309,
+9405,9503,9717,9734,10101,10217,10309,10943,
+10961,11107,11265,11287,11343
+];
+
+// Populate team dropdown
+const teamSelect = document.getElementById("teamNumber");
+mslsTeams.forEach(t => {
+  const opt = document.createElement("option");
+  opt.value = t;
+  opt.text = t;
+  teamSelect.add(opt);
+});
+
 let currentPage = 0;
 const pages = document.querySelectorAll(".page");
 const driveOther = document.getElementById("driveOther");
 const sensorOther = document.getElementById("sensorOther");
 const sensorOtherCB = document.getElementById("sensorOtherCB");
-const teamNumber = document.getElementById("teamNumber");
+const ladderChecks = document.querySelectorAll('#ladderCheckboxes input[type="checkbox"]');
 const scouterName = document.getElementById("scouterName");
 const intake = document.getElementById("intake");
 const output = document.getElementById("output");
@@ -320,6 +342,8 @@ function showPage(i) {
 }
 
 function nextPage() {
+  // Validate page before moving forward
+  if (!validatePage(currentPage)) return;
   if (currentPage < pages.length - 1) {
     currentPage++;
     showPage(currentPage);
@@ -342,34 +366,73 @@ sensorOtherCB.addEventListener("change", () => {
   sensorOther.style.display = sensorOtherCB.checked ? "block" : "none";
 });
 
+// Ladder exclusivity
+ladderChecks.forEach(chk => {
+  chk.addEventListener('change', () => {
+    if (chk.value === "N" && chk.checked) {
+      ladderChecks.forEach(other => { if (other !== chk) other.checked = false; });
+    } else if (chk.value !== "N" && chk.checked) {
+      ladderChecks.forEach(other => { if (other.value === "N") other.checked = false; });
+    }
+  });
+});
+
 function getChecked(name) {
   return [...document.querySelectorAll(`input[name="${name}"]:checked`)]
     .map(i => i.value)
     .join("");
 }
 
-function generateQR() {
-  if (!teamNumber.value) {
-    alert("Team number required");
-    return;
+// Validate page input
+function validatePage(page) {
+  if (page === 0) {
+    if (!scouterName.value) { alert("Scouter name required"); return false; }
+    if (!teamSelect.value) { alert("Team selection required"); return false; }
   }
+  if (page === 1) {
+    if (!intake.value) { alert("Select Intake"); return false; }
+    if (!output.value) { alert("Select Output"); return false; }
+    if (!driveOther.style.display && !driveSystem.value) { alert("Select Drive system"); return false; }
+    if (autoPreload.value < 0 || autoPreload.value > 8) { alert("Auto Preload must be 0-8"); return false; }
+    if (capacity.value < 0 || capacity.value > 20) { alert("Capacity must be 0-20"); return false; }
+  }
+  if (page === 3) {
+    if (!autoStrat.value) { alert("Select Auto Strategy"); return false; }
+    if (autoEstScore.value < 0 || autoEstScore.value > 100) { alert("Auto Est Score 0-100"); return false; }
+  }
+  return true;
+}
+
+function generateQR() {
+  if (!validatePage(currentPage)) return;
 
   const data = {
     scouter: scouterName.value,
-    team: teamNumber.value,
+    team: teamSelect.value,
     mech: {
       i: intake.value,
       o: output.value,
       ap: autoPreload.value,
-      c: capacity.value
+      c: capacity.value,
+      ladder: [...ladderChecks].filter(chk=>chk.checked).map(chk=>chk.value).join(","),
+      drive: driveOther.style.display === "block" ? driveOther.value : document.getElementById("driveSystem").value
+    },
+    sensors: {
+      limelight: document.getElementById("sensorLimelight").checked,
+      lidar: document.getElementById("sensorLidar").checked,
+      ultrasonic: document.getElementById("sensorUltra").checked,
+      april: document.getElementById("sensorApril").checked,
+      other: sensorOther.value
     },
     auto: {
-      s: getChecked("startPos"),
-      st: autoStrat.value,
-      e: autoEstScore.value
+      startPos: getChecked("startPos"),
+      strat: autoStrat.value,
+      fuel: document.getElementById("autoFuel").checked,
+      ladder: document.getElementById("autoLadder").checked,
+      estScore: autoEstScore.value
     },
-    n: notes.value,
-    ts: new Date().toLocaleString()
+    notes: notes.value,
+    timestamp: new Date().toLocaleString()
   };
 
   qrcode.innerHTML = "";
