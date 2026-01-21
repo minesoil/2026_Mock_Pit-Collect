@@ -143,10 +143,19 @@ input, textarea, select {
 
 .checkbox-inline label {
   display: flex;
-  align-items: center;
+  align-items: center; /* vertically centers checkbox and text */
   gap: 6px;
   white-space: nowrap;
   font-weight: normal;
+  font-size: 16px; /* consistent font size for mobile */
+  line-height: 1.2; /* prevents weird spacing */
+}
+
+.checkbox-inline input[type="checkbox"] {
+  flex-shrink: 0; /* prevents shrinking on mobile */
+  width: 20px; /* consistent size */
+  height: 20px;
+  margin: 0; /* remove default margin */
 }
 </style>
 </head>
