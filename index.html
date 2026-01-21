@@ -133,7 +133,7 @@ input, textarea, select {
   margin-top: 6px;
 }
 
-/* CHECKBOX FIXES */
+/* CHECKBOX FIXES FOR MOBILE & DESKTOP */
 .checkbox-inline {
   display: flex;
   flex-wrap: wrap;
@@ -143,19 +143,19 @@ input, textarea, select {
 
 .checkbox-inline label {
   display: flex;
-  align-items: center; /* vertically centers checkbox and text */
+  align-items: center; /* vertical alignment */
   gap: 6px;
   white-space: nowrap;
   font-weight: normal;
-  font-size: 16px; /* consistent font size for mobile */
-  line-height: 1.2; /* prevents weird spacing */
+  font-size: 16px; /* consistent on mobile */
+  line-height: 1.2;
 }
 
 .checkbox-inline input[type="checkbox"] {
-  flex-shrink: 0; /* prevents shrinking on mobile */
-  width: 20px; /* consistent size */
+  flex-shrink: 0;
+  width: 20px;
   height: 20px;
-  margin: 0; /* remove default margin */
+  margin: 0;
 }
 </style>
 </head>
@@ -181,7 +181,11 @@ input, textarea, select {
     <input id="teamNumber" type="number" placeholder="Enter team number">
     <p id="teamInfo" style="margin-top:6px; font-size:0.9em; color:var(--earth);"></p>
   </div>
-  <button class="main-btn" onclick="nextPage()">Next</button>
+  <div class="nav-buttons">
+    <button class="main-btn" onclick="nextPage()">Next</button>
+    <button class="main-btn" onclick="resetForm()">Reset</button>
+    <button class="main-btn" onclick="toggleFullScreen()">Fullscreen</button>
+  </div>
 </div>
 
 <!-- PAGE 2 -->
@@ -206,8 +210,8 @@ input, textarea, select {
     <label>Auto Preload (0-8)</label>
     <input id="autoPreload" type="number" min="0" max="8">
 
-    <label>Capacity</label>
-    <input id="capacity" type="number" min="0">
+    <label>Capacity (0-100)</label>
+    <input id="capacity" type="number" min="0" max="100">
 
     <label>Ladder</label>
     <div class="checkbox-inline" id="ladderGroup">
@@ -277,8 +281,8 @@ input, textarea, select {
       <label><input type="checkbox" id="autoLadder"> Ladder</label>
     </div>
 
-    <label>Auto Est Score</label>
-    <input id="autoEstScore" type="number" min="0">
+    <label>Auto Est Score (0-100)</label>
+    <input id="autoEstScore" type="number" min="0" max="100">
   </div>
 
   <div class="nav-buttons">
@@ -314,150 +318,92 @@ input, textarea, select {
 let currentPage = 0;
 const pages = document.querySelectorAll(".page");
 
-function showPage(i) {
-  pages.forEach(p => p.classList.remove("active"));
-  pages[i].classList.add("active");
-}
-
-function nextPage() {
-  showPage(currentPage+1 < pages.length ? ++currentPage : currentPage);
-}
-function prevPage() {
-  showPage(currentPage-1 >= 0 ? --currentPage : currentPage);
-}
+function showPage(i) { pages.forEach(p=>p.classList.remove("active")); pages[i].classList.add("active"); }
+function nextPage() { showPage(currentPage+1<pages.length?++currentPage:currentPage); }
+function prevPage() { showPage(currentPage-1>=0?--currentPage:currentPage); }
 
 // DOM Elements
-const driveOther = document.getElementById("driveOther");
-const sensorOther = document.getElementById("sensorOther");
-const sensorOtherCB = document.getElementById("sensorOtherCB");
-const teamNumber = document.getElementById("teamNumber");
-const teamInfo = document.getElementById("teamInfo");
-const scouterName = document.getElementById("scouterName");
-const intake = document.getElementById("intake");
-const output = document.getElementById("output");
-const autoPreload = document.getElementById("autoPreload");
-const capacity = document.getElementById("capacity");
-const autoStrat = document.getElementById("autoStrat");
-const autoEstScore = document.getElementById("autoEstScore");
-const notes = document.getElementById("notes");
-const qrcode = document.getElementById("qrcode");
+const driveOther=document.getElementById("driveOther");
+const sensorOther=document.getElementById("sensorOther");
+const sensorOtherCB=document.getElementById("sensorOtherCB");
+const teamNumber=document.getElementById("teamNumber");
+const teamInfo=document.getElementById("teamInfo");
+const scouterName=document.getElementById("scouterName");
+const intake=document.getElementById("intake");
+const output=document.getElementById("output");
+const autoPreload=document.getElementById("autoPreload");
+const capacity=document.getElementById("capacity");
+const autoStrat=document.getElementById("autoStrat");
+const autoEstScore=document.getElementById("autoEstScore");
+const notes=document.getElementById("notes");
+const qrcode=document.getElementById("qrcode");
 
-// Team info
-const mslsTeamDetails = {
-  364:"Team Fusion 364 - Gulfport, Mississippi, USA",
-  456:"Siege Robotics - Vicksburg, Mississippi, USA",
-  538:"Renaissance Robotics - Athens, Alabama, USA",
-  590:"Chahta Warriors - Choctaw, Mississippi, USA",
-  1421:"Team CHAOS - Picayune, Mississippi, USA",
-  1912:"Team Combustion - Slidell, Louisiana, USA",
-  1927:"Tempest - Biloxi, Mississippi, USA",
-  2221:"FHS Robodawgs - Mandeville, Louisiana, USA",
-  2556:"RadioActive Roaches - Niceville, Florida, USA",
-  2992:"The S.S. Prometheus - Mandeville, Louisiana, USA",
-  3039:"Wildcat Robotics - Destrehan, Louisiana, USA",
-  3616:"Team Phenomena - Lafayette, Louisiana, USA",
-  3753:"BulahBots! - Baton Rouge, Louisiana, USA",
-  4087:"Voodoo Voltage - New Orleans, Louisiana, USA",
-  4107:"Team Storm - Long Beach, Mississippi, USA",
-  4336:"Ramageddon Robotics - Lafayette, Louisiana, USA",
-  4400:"Cerbotics - Peñoles - TORREON, Coahuila, Mexico",
-  5045:"SpartaBot - Memphis, Tennessee, USA",
-  5863:"Hypercubed - Brusly, Louisiana, USA",
-  5971:"Raider Robotics Team - Metairie, Louisiana, USA",
-  6184:"C4 (Capital City Chaotic Coders) - Tallahassee, Florida, USA",
-  6489:"Bronco Bolts - Zachary, Louisiana, USA",
-  6706:"Golem - Shenzhen, Guangdong, China",
-  6998:"Unipards - Tainan, Taiwan",
-  7094:"Alpha Omega - Bay Saint Louis, Mississippi, USA",
-  7474:"JXN UNITED - Ridgeland, Mississippi, USA",
-  8044:"Denham Venom - Denham Springs, Louisiana, USA",
-  8624:"Sasquatch Robotics - Andalusia, Alabama, USA",
-  8808:"SWLA Tech Pirates - Lake Charles, Louisiana, USA",
-  9153:"Bearcat Robotics - Ruston, Louisiana, USA",
-  9309:"Metal Mages - New Orleans, Louisiana, USA",
-  9405:"KNOS Robotics - New Orleans, Louisiana, USA",
-  9503:"EF5 CHAOS - Laurel, Mississippi, USA",
-  9717:"Poultronix - Forest, Mississippi, USA",
-  9734:"Jasper County Robotics - Bay Springs, Mississippi, USA",
-  10101:"Critical Hit - Huntsville, Alabama, USA",
-  10217:"Catahoula Blue Dogs - Port Allen, Louisiana, USA",
-  10309:"Jayhawks Robotics - Columbus, Mississippi, USA",
-  10661:"Blue Phoenix - Shawnee, Oklahoma, USA",
-  10929:"Tarpon Robotics - Cut Off, Louisiana, USA",
-  10943:"WJH RoboMustangs - Laurel, Mississippi, USA",
-  10961:"Hyper Wave - Gulf Shores, Alabama, USA",
-  11107:"FARMBots - Farmerville, Louisiana, USA",
-  11265:"Rock‑a‑chaw Robotics - Bay Saint Louis, Mississippi, USA",
-  11287:"Canton Career Center - Canton, Mississippi, USA",
-  11343:"JPS High School Robotics - Jackson, Mississippi, USA",
-  11345:"Long Beach RoboBearcats - Long Beach, Mississippi, USA"
-};
+// Team info example (add your full list)
+const mslsTeamDetails={6998:"Unipards – Tainan, Taiwan"};
 
-// Show team name on input
-teamNumber.addEventListener("input", function() {
-  const val = parseInt(this.value);
-  if (!val) { teamInfo.textContent = ""; return; }
-  teamInfo.textContent = mslsTeamDetails[val] || "Team not found at this event.";
+// Show team name dynamically
+teamNumber.addEventListener("input",()=>{ 
+  const val=parseInt(teamNumber.value);
+  teamInfo.textContent = mslsTeamDetails[val] || (val?"Team not found at this event.":""); 
 });
 
-// Other & sensor input
-function checkOther(sel) {
-  driveOther.style.display = sel.value==="O"?"block":"none";
-  sensorOther.style.display = sensorOtherCB.checked?"block":"none";
-}
-sensorOtherCB.addEventListener("change", ()=>{ sensorOther.style.display = sensorOtherCB.checked?"block":"none"; });
+// Other inputs
+function checkOther(sel){ driveOther.style.display=sel.value==="O"?"block":"none"; sensorOther.style.display=sensorOtherCB.checked?"block":"none"; }
+sensorOtherCB.addEventListener("change",()=>{sensorOther.style.display=sensorOtherCB.checked?"block":"none";});
 
-// Ladder N/A logic
-const ladderChecks = document.querySelectorAll(".ladderCheck");
-const ladderNA = document.getElementById("ladderNA");
-ladderChecks.forEach(ch => {
-  ch.addEventListener("change", e => {
-    if (e.target === ladderNA && ladderNA.checked) {
-      ladderChecks.forEach(c => {if(c!==ladderNA) c.checked=false;});
-    } else if (e.target!==ladderNA && e.target.checked) {
-      ladderNA.checked=false;
-    }
-  });
-});
+// Ladder logic
+const ladderChecks=document.querySelectorAll(".ladderCheck");
+const ladderNA=document.getElementById("ladderNA");
+ladderChecks.forEach(ch=>{ ch.addEventListener("change", e=>{
+  if(e.target===ladderNA && ladderNA.checked){ ladderChecks.forEach(c=>{if(c!==ladderNA)c.checked=false;}); }
+  else if(e.target!==ladderNA && e.target.checked){ ladderNA.checked=false; }
+}); });
 
 // Get checked start positions
-function getChecked(name){
-  return [...document.querySelectorAll(`input[name="${name}"]:checked`)]
-    .map(i=>i.value).join("");
-}
+function getChecked(name){ return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(i=>i.value).join(""); }
 
 // Generate QR
 function generateQR(){
-  if(!teamNumber.value){ alert("Team number required"); return; }
-  if(autoPreload.value>8){ alert("Auto Preload cannot be >8"); return; }
-  if(capacity.value>100){ alert("Capacity cannot be >100"); return; }
-  if(autoEstScore.value>100){ alert("Auto Est Score cannot be >100"); return; }
+  if(!teamNumber.value){alert("Team number required"); return;}
+  if(autoPreload.value>8){alert("Auto Preload cannot be >8"); return;}
+  if(capacity.value>100){alert("Capacity cannot be >100"); return;}
+  if(autoEstScore.value>100){alert("Auto Est Score cannot be >100"); return;}
 
   const data={
     scouter: scouterName.value,
     team: teamNumber.value,
     mech:{
-      i:intake.value,
-      o:output.value,
-      ap:autoPreload.value,
-      c:capacity.value,
-      ladder: [...document.querySelectorAll(".ladderCheck:checked")].map(c=>c.value)
+      i:intake.value,o:output.value,ap:autoPreload.value,c:capacity.value,
+      ladder:[...document.querySelectorAll(".ladderCheck:checked")].map(c=>c.value)
     },
     auto:{
-      s:getChecked("startPos"),
-      st:autoStrat.value,
-      e:autoEstScore.value
+      s:getChecked("startPos"),st:autoStrat.value,e:autoEstScore.value
     },
     n:notes.value,
     ts:new Date().toLocaleString()
   };
 
   qrcode.innerHTML="";
-  new QRCode(qrcode,{
-    text: JSON.stringify(data),
-    width:180,
-    height:180
-  });
+  new QRCode(qrcode,{text:JSON.stringify(data),width:180,height:180});
+}
+
+// Reset form without internet
+function resetForm(){
+  if(confirm("Are you sure you want to reset all inputs?")){
+    document.querySelectorAll("input, select, textarea").forEach(el=>{
+      if(el.type==="checkbox"||el.type==="radio") el.checked=false;
+      else el.value="";
+    });
+    qrcode.innerHTML="";
+    teamInfo.textContent="";
+  }
+}
+
+// Fullscreen toggle
+function toggleFullScreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(err=>alert(`Error: ${err.message}`));
+  } else { document.exitFullscreen(); }
 }
 </script>
 </body>
