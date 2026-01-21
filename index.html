@@ -183,7 +183,6 @@ input, textarea, select {
   </div>
   <div class="nav-buttons">
     <button class="main-btn" onclick="nextPage()">Next</button>
-    <button class="main-btn" onclick="resetForm()">Reset</button>
     <button class="main-btn" onclick="toggleFullScreen()">Fullscreen</button>
   </div>
 </div>
@@ -308,6 +307,7 @@ input, textarea, select {
     <h2>QR Code</h2>
     <div id="qrcode"></div>
   </div>
+  <button class="main-btn" onclick="resetForm()">Reset</button>
   <button class="main-btn" onclick="prevPage()">Back</button>
 </div>
 
@@ -394,6 +394,7 @@ function resetForm(){
       if(el.type==="checkbox"||el.type==="radio") el.checked=false;
       else el.value="";
     });
+    showPage(pages[0]);
     qrcode.innerHTML="";
     teamInfo.textContent="";
   }
