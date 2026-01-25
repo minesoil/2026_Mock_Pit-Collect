@@ -7,30 +7,30 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
+:root {
   --bg1:#0F0F12; --bg2:#1A1A1F; --txt:#F2F2F2; --gold:#D4AF37; --warn:#FF4C4C;
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Lexend',sans-serif;}
-body{background:var(--bg1);color:var(--txt);}
-header{text-align:center;padding:22px;border-bottom:3px solid var(--gold);}
-.container{max-width:900px;margin:20px auto;padding:14px;}
-.card{background:linear-gradient(145deg,var(--bg1),var(--bg2));border-radius:18px;padding:18px;margin-bottom:16px;}
-.card h2{border-left:6px solid var(--gold);padding-left:12px;margin-bottom:10px;}
-label{display:block;margin-top:10px;font-weight:600;}
-input,textarea,select{width:100%;padding:9px;margin-top:6px;background:#121218;color:var(--txt);border-radius:12px;border:1px solid rgba(255,255,255,.15);}
-.checkbox-inline{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;}
-.checkbox-inline label{display:flex;align-items:center;gap:6px;font-weight:normal;}
-.main-btn{flex:1;padding:12px;font-weight:bold;border-radius:14px;background:linear-gradient(135deg,#D4AF37,#FFD966);border:none;cursor:pointer;}
-.nav-buttons{display:flex;gap:10px;margin-top:12px;}
-.page{display:none;}
-.page.active{display:block;}
-#qrcode{width:180px;height:180px;margin:0 auto;background:white;border-radius:10px;}
-#warning{color:var(--warn);margin-top:6px;font-size:0.9rem;}
-#promptModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);color:#F2F2F2;display:flex;align-items:center;justify-content:center;z-index:1000;}
-#promptContent{background:linear-gradient(145deg,#1A1A1F,#0F0F12);padding:20px;border-radius:14px;max-width:600px;max-height:80%;overflow-y:auto;}
-#promptContent h2{border-left:4px solid var(--gold);padding-left:10px;margin-bottom:10px;}
-#promptContent p, #promptContent ul{margin-bottom:10px;font-size:0.95rem;}
-#promptClose{margin-top:10px;padding:10px 16px;background:linear-gradient(135deg,#D4AF37,#FFD966);border:none;border-radius:10px;cursor:pointer;font-weight:bold;}
+* { box-sizing:border-box; margin:0; padding:0; font-family:'Lexend', sans-serif; }
+body { background: var(--bg1); color: var(--txt); }
+header { text-align:center; padding:22px; border-bottom:3px solid var(--gold); }
+.container { max-width:900px; margin:20px auto; padding:14px; }
+.card { background: linear-gradient(145deg,var(--bg1),var(--bg2)); border-radius:18px; padding:18px; margin-bottom:16px; }
+.card h2 { border-left:6px solid var(--gold); padding-left:12px; margin-bottom:10px; }
+label { display:block; margin-top:10px; font-weight:600; }
+input,textarea,select { width:100%; padding:9px; margin-top:6px; background:#121218; color:var(--txt); border-radius:12px; border:1px solid rgba(255,255,255,.15); }
+.checkbox-inline { display:flex; flex-wrap:wrap; gap:12px; margin-top:6px; }
+.checkbox-inline label { display:flex; align-items:center; gap:6px; font-weight:normal; }
+.main-btn { flex:1; padding:12px; font-weight:bold; border-radius:14px; background:linear-gradient(135deg,#D4AF37,#FFD966); border:none; cursor:pointer; }
+.nav-buttons { display:flex; gap:10px; margin-top:12px; }
+.page { display:none; }
+.page.active { display:block; }
+.warning { color: var(--warn); font-size:0.9rem; margin-top:4px; }
+#qrcode { width:180px; height:180px; margin:0 auto; background:white; border-radius:10px; display:none; }
+#promptModal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); color:#F2F2F2; display:flex; align-items:center; justify-content:center; z-index:1000; }
+#promptContent { background:linear-gradient(145deg,#1A1A1F,#0F0F12); padding:20px; border-radius:14px; max-width:600px; max-height:80%; overflow-y:auto; }
+#promptContent h2 { border-left:4px solid var(--gold); padding-left:10px; margin-bottom:10px; }
+#promptContent p, #promptContent ul { margin-bottom:10px; font-size:0.95rem; }
+#promptClose { margin-top:10px; padding:10px 16px; background:linear-gradient(135deg,#D4AF37,#FFD966); border:none; border-radius:10px; cursor:pointer; font-weight:bold; }
 </style>
 </head>
 <body>
@@ -38,11 +38,11 @@ input,textarea,select{width:100%;padding:9px;margin-top:6px;background:#121218;c
 <!-- Prompt Modal -->
 <div id="promptModal">
   <div id="promptContent">
-    <h2>Prompt / Instructions for Scouters</h2>
-    <p>Welcome to the REBUILT 2026 Pit Scouting App! Please follow instructions carefully.</p>
+    <h2>Instructions for Scouters</h2>
+    <p>Welcome to REBUILT 2026 Pit Scouting! Please follow instructions carefully:</p>
     <ul>
       <li>Scouter Name: No profanity or racial slurs.</li>
-      <li>Team Number: Must be one of the 48 predefined teams.</li>
+      <li>Team Number: Must be one of 48 predefined teams.</li>
       <li>Drive Type: Only one selectable.</li>
       <li>Preload cannot exceed robot capacity.</li>
       <li>“Both” cancels other options for certain selections.</li>
@@ -66,6 +66,7 @@ input,textarea,select{width:100%;padding:9px;margin-top:6px;background:#121218;c
     <label>Scouter Name</label>
     <input id="scouter">
     <div id="scouterWarning" class="warning"></div>
+
     <label>Team Number</label>
     <input id="team" type="number">
     <div id="teamWarning" class="warning"></div>
@@ -90,22 +91,20 @@ input,textarea,select{width:100%;padding:9px;margin-top:6px;background:#121218;c
     </select>
     <div id="driveWarning" class="warning"></div>
 
-    <label>Robot Weight</label><input id="weight" type="number">
+    <label>Robot Weight</label>
+    <input id="weight" type="number">
 
-    <label>Maximum Capacity</label><input id="maxCap" type="number">
+    <label>Maximum Capacity</label>
+    <input id="maxCap" type="number">
     <div id="maxCapWarning" class="warning"></div>
 
     <label>Intake</label>
-    <select id="intake">
-      <option value="">Select Intake</option>
-      <option>Roller</option>
-      <option>Pneumatic</option>
-      <option>Both</option>
-    </select>
+    <div class="checkbox-inline">
+      <label><input type="checkbox" id="intakeRoller"> Roller</label>
+      <label><input type="checkbox" id="intakePneumatic"> Pneumatic</label>
+      <label><input type="checkbox" id="intakeBoth"> Both</label>
+    </div>
     <div id="intakeWarning" class="warning"></div>
-
-    <label>Photos (optional)</label>
-    <input type="checkbox" id="photos"> Photos exist
   </div>
   <div class="nav-buttons">
     <button class="main-btn" onclick="prevPage()">Back</button>
@@ -120,8 +119,14 @@ input,textarea,select{width:100%;padding:9px;margin-top:6px;background:#121218;c
     <label>Preload (0–8)</label>
     <input id="preload" type="number" min="0" max="8">
     <div id="preloadWarning" class="warning"></div>
+
     <label>Total Auto Balls</label>
     <input id="autoBalls" type="number">
+
+    <label>Cross Midfield</label>
+    <div class="checkbox-inline">
+      <label><input type="checkbox" id="crossMid"> Yes</label>
+    </div>
   </div>
   <div class="nav-buttons">
     <button class="main-btn" onclick="prevPage()">Back</button>
@@ -140,8 +145,10 @@ input,textarea,select{width:100%;padding:9px;margin-top:6px;background:#121218;c
       <option>L2</option>
       <option>L3</option>
     </select>
+
     <label>Climb Time (s)</label>
     <input id="climbTime" type="number">
+
     <label>Other Notes</label>
     <textarea id="notes"></textarea>
     <div id="notesWarning" class="warning"></div>
@@ -192,27 +199,23 @@ const show=i=>{
   pages.forEach(p=>p.classList.remove("active"));
   pages[i].classList.add("active");
 };
-const nextPage=()=>{
-  if(!validatePage(page)) return;
-  show(++page);
-};
+const nextPage=()=>{ if(validatePage(page)) show(++page); };
 const prevPage=()=>show(--page);
 function toggleFS(){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
 
 // Prompt
-document.getElementById("promptClose").addEventListener("click",()=>{
-  document.getElementById("promptModal").style.display="none";
-});
+document.getElementById("promptClose").addEventListener("click",()=>document.getElementById("promptModal").style.display="none");
 
 // Validation
 function containsProfanity(str){
-  const badWords=["badword1","badword2"]; // Add full list
+  const badWords=["badword1","badword2"];
   str=str.toLowerCase();
   return badWords.some(w=>str.includes(w));
 }
 
 function validatePage(p){
   let valid=true;
+
   if(p===0){
     const scouter=document.getElementById("scouter").value.trim();
     const team=document.getElementById("team").value;
@@ -220,28 +223,32 @@ function validatePage(p){
       document.getElementById("scouterWarning").innerText="Invalid name.";
       valid=false;
     }else document.getElementById("scouterWarning").innerText="";
+
     if(!teams[team]){
       document.getElementById("teamWarning").innerText="Team not in predefined list.";
       document.getElementById("teamInfo").innerText="";
       valid=false;
-    }else{
+    } else {
       document.getElementById("teamWarning").innerText="";
       document.getElementById("teamInfo").innerText=`Team: ${teams[team]}`;
     }
-  } else if(p===2){
+  } 
+  else if(p===2){
     const preload=Number(document.getElementById("preload").value);
     const maxCap=Number(document.getElementById("maxCap").value);
     if(preload>maxCap){
       document.getElementById("preloadWarning").innerText="Preload exceeds max capacity.";
       valid=false;
-    }else document.getElementById("preloadWarning").innerText="";
-  } else if(p===3){
+    } else document.getElementById("preloadWarning").innerText="";
+  } 
+  else if(p===3){
     const notes=document.getElementById("notes").value;
     if(containsProfanity(notes)){
       document.getElementById("notesWarning").innerText="Notes contain invalid words.";
       valid=false;
     } else document.getElementById("notesWarning").innerText="";
   }
+
   return valid;
 }
 
@@ -258,23 +265,27 @@ function generateQR(){
     drive:document.getElementById("drive").value,
     weight:document.getElementById("weight").value,
     maxCap:document.getElementById("maxCap").value,
-    intake:document.getElementById("intake").value,
-    photos:document.getElementById("photos").checked,
+    intakeRoller:document.getElementById("intakeRoller").checked,
+    intakePneumatic:document.getElementById("intakePneumatic").checked,
+    intakeBoth:document.getElementById("intakeBoth").checked,
     preload:document.getElementById("preload").value,
     autoBalls:document.getElementById("autoBalls").value,
+    crossMid:document.getElementById("crossMid").checked,
     climbLevel:document.getElementById("climbLevel").value,
     climbTime:document.getElementById("climbTime").value,
     notes:document.getElementById("notes").value
   };
   document.getElementById("qrcode").innerHTML="";
-  new QRCode(document.getElementById("qrcode"),JSON.stringify(data));
+  document.getElementById("qrcode").style.display="block";
+  new QRCode(document.getElementById("qrcode"), JSON.stringify(data));
 }
 
 // Reset
 function resetAll(){
   document.querySelectorAll("input,textarea,select").forEach(el=>el.value="");
-  document.getElementById("photos").checked=false;
+  document.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.checked=false);
   document.getElementById("qrcode").innerHTML="";
+  document.getElementById("qrcode").style.display="none";
   document.querySelectorAll(".warning").forEach(w=>w.innerText="");
   show(0);
 }
