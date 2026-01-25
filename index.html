@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRC 6998 | Pit Scout 2026</title>
+    <title>6998 | Pit Scout 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -79,11 +79,17 @@
 
 <header>
     <h1>6998 Pit Scout 2026</h1>
-    <div class="match-counter" id="mCount">MATCHES: 0</div>
+    <div class="match-counter" id="mCount">ROBOTS: 0</div>
 </header>
 
 <div class="container">
     <form id="scoutingForm" onsubmit="return false;">
+        
+        <div class="page active" id="page0">
+            <div class="warning-front">
+                <h3 style="color:var(--error); margin-bottom: 5px;">⚠️ PERSONNEL AUDIT</h3>
+                <p style="font-size: 0.7rem;">ALL INPUTS ARE LOGGED AGAINST THE CMU PROFANITY DATABASE. FALSE DATA WILL BE REPORTED.</p>
+            </div>
             <div class="card">
                 <h2>Identification</h2>
                 <label>Scouter Name</label>
@@ -227,10 +233,8 @@
 </div>
 
 <script>
-    // FULL CMU BAD WORDS FILTER (Active Logic)
     const badWords = ["anal","anus","arse","ass","ballsack","bastard","bitch","biatch","bloody","blowjob","bollock","bollok","boner","boob","bugger","bum","butt","buttplug","clitoris","cock","coon","crap","cunt","damn","dick","dildo","dyke","fag","feck","felatio","feltch","fuck","fudgepacker","flange","goddamn","hell","homo","jerk","jizm","knobend","labia","lmao","lmfao","muff","nigger","nigga","piss","poop","prick","pube","pussy","queer","scrotum","sex","sh1t","shit","slut","smegma","spunk","tit","tosser","turd","twat","vagina","wank","whore","wtf"];
     
-    // RESTORED TEAM DATABASE
     const teams = { 364:"Team Fusion", 456:"Siege Robotics", 538:"Renaissance Robotics", 590:"Chahta Warriors", 1421:"Team CHAOS", 1912:"Team Combustion", 1927:"Tempest", 2221:"FHS Robodawgs", 2556:"RadioActive Roaches", 2992:"The S.S. Prometheus", 3039:"Wildcat Robotics", 3606:"BearMetal", 3616:"Team Phenomena", 3753:"BulahBots!", 4087:"Voodoo Voltage", 4107:"Team Storm", 4336:"Ramageddon Robotics", 4400:"Cerbotics - Peñoles", 5045:"SpartaBot", 5863:"Hypercubed", 5971:"Raider Robotics Team", 6184:"C4", 6706:"Golem", 6998:"Unipards", 7094:"Alpha Omega", 7474:"JXN UNITED", 8044:"Denham Venom", 8624:"Sasquatch Robotics", 8808:"SWLA Tech Pirates", 9153:"Bearcat Robotics", 9309:"Metal Mages", 9405:"KNOS Robotics", 9503:"EF5 CHAOS", 9717:"Poultronix", 9734:"Jasper County Robotics", 10101:"Critical Hit", 10217:"Catahoula Blue Dogs", 10309:"Jayhawks Robotics", 10661:"Blue Phoenix", 10929:"Tarpon Robotics", 10943:"WJH RoboStangs", 10961:"Hyper Wave", 11107:"FARMBots", 11265:"Rockbotics", 11287:"Canton Career Center", 11343:"JPS High School Robotics", 11345:"Long Beach RoboBearcats" };
 
     let curPage = 0;
@@ -238,8 +242,7 @@
     let logs = [];
 
     function toggleMidfield() {
-        const checked = document.getElementById('crossMid').checked;
-        document.getElementById('midfieldSection').style.display = checked ? 'block' : 'none';
+        document.getElementById('midfieldSection').style.display = document.getElementById('crossMid').checked ? 'block' : 'none';
     }
 
     function toggleStability() {
@@ -275,13 +278,11 @@
         const preload = parseInt(document.getElementById('preload').value) || 0;
         const notes = document.getElementById('notes').value.toLowerCase();
 
-        // Profanity Audit
         if (badWords.some(w => name.includes(w) || notes.includes(w))) {
-            document.getElementById('scouterWarn').innerText = "BAD WORD DETECTED!";
+            document.getElementById('scouterWarn').innerText = "PROFANITY DETECTED!";
             valid = false;
         } else { document.getElementById('scouterWarn').innerText = ""; }
 
-        // Team Database Check
         if (teams[tNum]) {
             document.getElementById('teamBadge').innerText = "✓ " + teams[tNum];
             document.getElementById('teamBadge').style.background = "var(--accent)";
@@ -291,7 +292,6 @@
             valid = false;
         }
 
-        // Rule 1: Preload
         if (preload > 8) {
             document.getElementById('preloadWarn').innerText = "MAX PRELOAD IS 8";
             valid = false;
@@ -328,22 +328,28 @@
 
     function generateQR() {
         matchCount++;
-        document.getElementById('mCount').innerText = "MATCHES: " + matchCount;
+        document.getElementById('mCount').innerText = "ROBOTS: " + matchCount;
         const team = document.getElementById('teamNum').value;
         
-        logs.unshift(`Team ${team} (${teams[team]}) - QR Created`);
+        logs.unshift(`Team ${team} (${teams[team]}) - Logged`);
         document.getElementById('sessionLogs').innerHTML = logs.map(l => `<div class="log-entry"><span>${l}</span> <b>✓</b></div>`).join('');
 
-        const data = { t: team, p: document.getElementById('preload').value, n: document.getElementById('notes').value };
+        const data = { t: team, s: document.getElementById('scouterName').value, n: document.getElementById('notes').value };
         const qrEl = document.getElementById('qrcode');
         qrEl.innerHTML = ""; qrEl.style.display = "block";
         new QRCode(qrEl, { text: JSON.stringify(data), width: 180, height: 180 });
-        document.getElementById('genBtn').innerText = "QR CODE READY";
+        document.getElementById('genBtn').innerText = "SAVED TO LOG";
         document.getElementById('genBtn').style.background = "#4caf50";
     }
 
     function softReset() {
-        document.getElementById('scoutingForm').reset();
+        document.getElementById('scouterName').value = "";
+        document.getElementById('teamNum').value = "";
+        document.getElementById('notes').value = "";
+        document.getElementById('preload').value = 0;
+        document.getElementById('autoBalls').value = 0;
+        document.getElementById('climbTime').value = 0;
+        
         curPage = 0;
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('page0').classList.add('active');
