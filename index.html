@@ -124,10 +124,11 @@
                     <label class="option-box"><input type="checkbox" name="intake" value="Both" class="logic-both" data-group="intake"> Both</label>
                 </div>
 
-                <label>Vision & Camera</label>
+                <label>Vision & Tracking</label>
                 <div class="grid-options">
-                    <label class="option-box"><input type="checkbox" name="vision" value="Limelight"> Limelight</label>
-                    <label class="option-box"><input type="checkbox" name="vision" value="AI-Camera"> AI Camera</label>
+                    <label class="option-box"><input type="checkbox" name="vision" value="Limelight" class="logic-group" data-group="vis"> Limelight</label>
+                    <label class="option-box"><input type="checkbox" name="vision" value="AprilTag" class="logic-group" data-group="vis"> AprilTag</label>
+                    <label class="option-box"><input type="checkbox" name="vision" value="Both" class="logic-both" data-group="vis"> Both</label>
                 </div>
             </div>
         </div>
@@ -155,6 +156,7 @@
                     <div class="grid-options">
                         <label class="option-box"><input type="checkbox" name="terrain" value="Bump" class="logic-group" data-group="terr" onchange="toggleStability()"> Bump</label>
                         <label class="option-box"><input type="checkbox" name="terrain" value="Trench" class="logic-group" data-group="terr" onchange="toggleStability()"> Trench</label>
+                        <label class="option-box"><input type="checkbox" name="terrain" value="Both" class="logic-both" data-group="terr" onchange="toggleStability()"> Both</label>
                     </div>
                     <div id="stabilitySection" style="display:none; margin-top:15px;">
                         <label>Stability: <span id="sLabel" style="color:var(--accent)">3</span></label>
@@ -167,11 +169,11 @@
         <div class="page" id="page3">
             <div class="card">
                 <h2>Teleop & Climb</h2>
-                <label>Climb Level</label>
+                <label>Climb Level (Multi-select)</label>
                 <div class="grid-options">
-                    <label class="option-box"><input type="checkbox" name="climbLv" value="L1" class="logic-group" data-group="cl"> L1</label>
-                    <label class="option-box"><input type="checkbox" name="climbLv" value="L2" class="logic-group" data-group="cl"> L2</label>
-                    <label class="option-box"><input type="checkbox" name="climbLv" value="L3" class="logic-group" data-group="cl"> L3</label>
+                    <label class="option-box"><input type="checkbox" name="climbLv" value="L1"> L1</label>
+                    <label class="option-box"><input type="checkbox" name="climbLv" value="L2"> L2</label>
+                    <label class="option-box"><input type="checkbox" name="climbLv" value="L3"> L3</label>
                 </div>
 
                 <label>Climb Time (sec)</label>
@@ -218,20 +220,31 @@
     }
 
     function toggleStability() {
-        const isBump = document.querySelector('input[value="Bump"]').checked;
+        const isBump = document.querySelector('input[value="Bump"]').checked || document.querySelector('input[value="Both"][data-group="terr"]').checked;
         document.getElementById('stabilitySection').style.display = isBump ? 'block' : 'none';
     }
 
+    // Logic for mutually exclusive choices vs multi-select
     document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         cb.addEventListener('change', function() {
             const group = this.getAttribute('data-group');
-            if (!group) return;
+            if (!group) return; // If no group, skip logic
+            
             const members = document.querySelectorAll(`.logic-group[data-group="${group}"]`);
             const both = document.querySelector(`.logic-both[data-group="${group}"]`);
+            
+            // If "Both" is clicked, uncheck the individuals
             if (this.classList.contains('logic-both') && this.checked) {
                 members.forEach(m => m.checked = false);
-            } else if (this.classList.contains('logic-group')) {
+            } 
+            // If an individual member is clicked
+            else if (this.classList.contains('logic-group')) {
                 if(both) both.checked = false;
+                
+                // NEW: If group has exactly 2 members, make it "Choose One" (Radio style)
+                if (members.length === 2) {
+                    members.forEach(m => { if(m !== this) m.checked = false; });
+                }
             }
             validate();
         });
@@ -244,7 +257,6 @@
         const tNum = document.getElementById('teamNum').value;
         const preload = parseInt(document.getElementById('preload').value) || 0;
 
-        // Profanity Check
         if (badWords.some(w => name.includes(w))) {
             document.getElementById('scouterWarn').innerText = "AUDIT FAILED: INVALID NAME";
             valid = false;
@@ -255,7 +267,6 @@
             valid = false;
         } else { document.getElementById('notesWarn').innerText = ""; }
 
-        // Team Check
         if (teams[tNum]) {
             document.getElementById('teamBadge').innerText = "✓ " + teams[tNum];
             document.getElementById('teamBadge').style.background = "var(--accent)";
@@ -312,7 +323,7 @@
             n: document.getElementById('notes').value
         };
 
-        logs.unshift(`Team ${data.t} - Compressed Sync Ready`);
+        logs.unshift(`Team ${data.t} - Logged`);
         document.getElementById('sessionLogs').innerHTML = logs.map(l => `<div class="log-entry"><span>${l}</span> <b>✓</b></div>`).join('');
 
         const qrEl = document.getElementById('qrcode');
@@ -329,7 +340,7 @@
             <div style="color:var(--accent); font-weight:bold;">READY TO SYNC:</div>
             <div><b>Target:</b> Team ${tNum}</div>
             <div><b>Scouter:</b> ${name}</div>
-            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:5px;">All technical specs and auto logic compressed into QR.</div>
+            <div style="font-size:0.7rem; color:var(--text-dim); margin-top:5px;">Data for AprilTags, Terrain, and Climb compressed.</div>
         `;
     }
 
