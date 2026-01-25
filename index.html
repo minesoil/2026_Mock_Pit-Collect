@@ -30,16 +30,15 @@
 
         header {
             background: var(--bg-card);
-            padding: 2rem 1rem;
+            padding: 1.5rem 1rem;
             text-align: center;
             border-bottom: 2px solid var(--accent);
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         header h1 { color: var(--accent); letter-spacing: 2px; text-transform: uppercase; font-size: 1.5rem; }
-        header p { font-size: 0.9rem; color: var(--text-dim); }
 
-        .container { max-width: 600px; margin: 20px auto; padding: 0 15px; padding-bottom: 100px; }
+        .container { max-width: 600px; margin: 20px auto; padding: 0 15px 100px 15px; }
 
         .card {
             background: var(--bg-card);
@@ -51,17 +50,17 @@
         }
 
         .card h2 { 
-            font-size: 1.2rem; 
-            margin-bottom: 1.5rem; 
+            font-size: 1.1rem; 
+            margin-bottom: 1.2rem; 
             color: var(--accent);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .card h2::before { content: ""; width: 4px; height: 20px; background: var(--accent); border-radius: 10px; }
+        .card h2::before { content: ""; width: 4px; height: 18px; background: var(--accent); border-radius: 10px; }
 
-        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; }
+        label { display: block; margin-top: 15px; font-weight: 600; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; }
 
         input, select, textarea {
             width: 100%;
@@ -72,20 +71,20 @@
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
+            box-shadow: 0 0 8px var(--accent-glow);
         }
 
-        /* Checkbox Styling */
+        /* Checkbox UI Improvement */
         .grid-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
             margin-top: 10px;
         }
 
@@ -93,27 +92,28 @@
             background: var(--input-bg);
             border: 1px solid rgba(255,255,255,0.1);
             padding: 12px;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             gap: 10px;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 0.9rem;
+            user-select: none;
         }
 
         .option-box:has(input:checked) {
             border-color: var(--accent);
-            background: rgba(214, 175, 55, 0.05);
+            background: rgba(214, 175, 55, 0.1);
         }
 
-        .option-box input { width: auto; margin: 0; accent-color: var(--accent); }
+        .option-box input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); cursor: pointer; }
 
         /* Warnings */
         .warning-text {
             color: var(--error);
             font-size: 0.75rem;
-            margin-top: 5px;
-            font-weight: 500;
+            margin-top: 6px;
+            font-weight: 600;
             min-height: 1rem;
         }
 
@@ -121,7 +121,11 @@
             color: var(--accent);
             font-weight: bold;
             margin-top: 5px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            display: none;
         }
 
         /* Navigation */
@@ -133,46 +137,45 @@
             background: var(--bg-card);
             padding: 15px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             border-top: 1px solid rgba(255,255,255,0.1);
             z-index: 100;
         }
 
         .btn {
             flex: 1;
-            padding: 15px;
-            border-radius: 14px;
+            padding: 14px;
+            border-radius: 12px;
             border: none;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
 
         .btn-next { background: var(--accent); color: #000; }
-        .btn-back { background: #333; color: #fff; }
-        .btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+        .btn-back { background: #2a2a30; color: #fff; }
+        .btn:disabled { opacity: 0.2; cursor: not-allowed; filter: grayscale(1); }
 
         /* QR Section */
         #qrcode { 
             background: #fff; 
-            padding: 15px; 
-            border-radius: 15px; 
+            padding: 12px; 
+            border-radius: 12px; 
             margin: 20px auto;
             width: fit-content;
         }
 
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease-out; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* Modal */
         #modal {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -183,7 +186,8 @@
             background: var(--bg-card);
             padding: 30px;
             border-radius: 20px;
-            max-width: 500px;
+            max-width: 450px;
+            text-align: center;
             border: 1px solid var(--accent);
         }
     </style>
@@ -192,28 +196,27 @@
 
 <div id="modal">
     <div class="modal-content">
-        <h2 style="color:var(--accent)">Pit Scouting 2026</h2>
-        <p style="margin: 15px 0; color: var(--text-dim)">Welcome, Scouter. Please ensure all data is accurate. Use the "Reset" button only to clear for a new team.</p>
-        <button class="btn btn-next" style="width:100%" onclick="closeModal()">Enter App</button>
+        <h2 style="color:var(--accent); margin-bottom: 10px;">Pit Scouting 2026</h2>
+        <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 25px;">Ensure offline data storage is active. Do not refresh the page until QR is scanned.</p>
+        <button class="btn btn-next" style="width:100%" onclick="document.getElementById('modal').style.display='none'">Begin Scouting</button>
     </div>
 </div>
 
 <header>
     <h1>FRC 6998</h1>
-    <p>Rebuilt Pit Scouting (Offline)</p>
 </header>
 
 <div class="container">
-    <form id="scoutingForm">
+    <form id="scoutingForm" onsubmit="return false;">
         <div class="page active" id="page0">
             <div class="card">
-                <h2>Scouter Info</h2>
-                <label>Your Name</label>
-                <input type="text" id="scouterName" placeholder="Enter name...">
+                <h2>Personnel</h2>
+                <label>Scouter Name</label>
+                <input type="text" id="scouterName" placeholder="Your name...">
                 <div id="scouterWarn" class="warning-text"></div>
 
                 <label>Team Number</label>
-                <input type="number" id="teamNum" placeholder="e.g. 6998">
+                <input type="number" id="teamNum" placeholder="Select from 48 teams">
                 <div id="teamInfo" class="team-display"></div>
                 <div id="teamWarn" class="warning-text"></div>
             </div>
@@ -221,27 +224,27 @@
 
         <div class="page" id="page1">
             <div class="card">
-                <h2>Robot Configuration</h2>
-                <label>Drive Type</label>
+                <h2>Robot Stats</h2>
+                <label>Drive Train</label>
                 <select id="driveType">
-                    <option value="">-- Select One --</option>
-                    <option value="Swerve">Swerve</option>
-                    <option value="Tank">Tank</option>
-                    <option value="Mecanum">Mecanum</option>
+                    <option value="">-- Choose One --</option>
+                    <option>Swerve</option>
+                    <option>Tank</option>
+                    <option>Mecanum</option>
                 </select>
                 <div id="driveWarn" class="warning-text"></div>
 
                 <label>Weight (lbs)</label>
-                <input type="number" id="weight" placeholder="0">
+                <input type="number" id="weight" placeholder="125">
 
                 <label>Max Ball Capacity</label>
-                <input type="number" id="maxCap" placeholder="0">
+                <input type="number" id="maxCap" placeholder="4">
                 <div id="capWarn" class="warning-text"></div>
             </div>
 
             <div class="card">
-                <h2>Systems</h2>
-                <label>Intake Type</label>
+                <h2>Capabilities</h2>
+                <label>Intake System</label>
                 <div class="grid-options">
                     <label class="option-box"><input type="checkbox" name="intake" value="Roller" class="logic-group" data-group="intake"> Roller</label>
                     <label class="option-box"><input type="checkbox" name="intake" value="Pneumatic" class="logic-group" data-group="intake"> Pneumatic</label>
@@ -265,19 +268,19 @@
 
         <div class="page" id="page2">
             <div class="card">
-                <h2>Autonomous</h2>
-                <label>Preload Balls (0-8)</label>
-                <input type="number" id="preload" value="0" min="0" max="8">
+                <h2>Autonomous Mode</h2>
+                <label>Starting Preload (0-8)</label>
+                <input type="number" id="preload" value="0">
                 <div id="preloadWarn" class="warning-text"></div>
 
-                <label>Autonomous Source</label>
+                <label>Auto Source</label>
                 <div class="grid-options">
                     <label class="option-box"><input type="checkbox" name="autoSource" value="Outpost" class="logic-group" data-group="as"> Outpost</label>
                     <label class="option-box"><input type="checkbox" name="autoSource" value="Depot" class="logic-group" data-group="as"> Depot</label>
                     <label class="option-box"><input type="checkbox" name="autoSource" value="Both" class="logic-both" data-group="as"> Both</label>
                 </div>
 
-                <label>Total Auto Balls Scored</label>
+                <label>Total Balls Scored in Auto</label>
                 <input type="number" id="autoBalls" value="0">
 
                 <div class="grid-options" style="margin-top:20px;">
@@ -288,7 +291,7 @@
 
         <div class="page" id="page3">
             <div class="card">
-                <h2>Endgame / Teleop</h2>
+                <h2>Endgame</h2>
                 <label>Climb Level</label>
                 <select id="climbLevel">
                     <option value="None">None</option>
@@ -297,7 +300,7 @@
                     <option value="L3">L3</option>
                 </select>
 
-                <label>Climb Position (Select All that Apply)</label>
+                <label>Climb Positions</label>
                 <div class="grid-options">
                     <label class="option-box"><input type="checkbox" name="climbPos" value="Left" class="logic-group" data-group="cp"> Left</label>
                     <label class="option-box"><input type="checkbox" name="climbPos" value="Center" class="logic-group" data-group="cp"> Center</label>
@@ -305,22 +308,21 @@
                     <label class="option-box"><input type="checkbox" name="climbPos" value="Both" class="logic-both" data-group="cp"> Both/All</label>
                 </div>
 
-                <label>Climb Time (Seconds)</label>
+                <label>Climb Time (Secs)</label>
                 <input type="number" id="climbTime" placeholder="0">
 
                 <label>Strategic Notes</label>
-                <textarea id="notes" rows="4" placeholder="Abilities, driver skill, weaknesses..."></textarea>
+                <textarea id="notes" rows="4" placeholder="Driver behavior, robot quirks..."></textarea>
                 <div id="notesWarn" class="warning-text"></div>
             </div>
         </div>
 
         <div class="page" id="page4">
             <div class="card" style="text-align: center;">
-                <h2>Data Complete</h2>
-                <p style="color: var(--text-dim); margin-bottom: 20px;">Review data with team leads, then generate the QR code.</p>
+                <h2 style="justify-content: center;">Data Review</h2>
                 <div id="qrcode"></div>
-                <button type="button" class="btn btn-next" style="margin-top: 20px; width: 100%;" onclick="generateQR()">Generate QR Code</button>
-                <button type="button" class="btn btn-back" style="margin-top: 10px; width: 100%; background: #600;" onclick="resetForm()">Full Reset</button>
+                <button type="button" class="btn btn-next" style="margin-top: 15px; width: 100%;" onclick="generateQR()">Generate QR</button>
+                <button type="button" class="btn btn-back" style="margin-top: 10px; width: 100%; background: #600;" onclick="resetForm()">Wipe & Reset</button>
             </div>
         </div>
     </form>
@@ -332,6 +334,9 @@
 </div>
 
 <script>
+    // Expanded profanity list
+    const badWords = ["shit", "fuck", "damn", "bitch", "cunt", "nigger", "faggot", "asshole", "piss"];
+
     const teams = {
         364: "Team Fusion (Gulfport, MS)", 456: "Siege Robotics (Vicksburg, MS)", 538: "Renaissance Robotics (Athens, AL)",
         590: "Chahta Warriors (Choctaw, MS)", 1421: "Team CHAOS (Picayune, MS)", 1912: "Team Combustion (Slidell, LA)",
@@ -351,18 +356,15 @@
         11343: "JPS High School Robotics (Jackson, MS)", 11345: "Long Beach RoboBearcats (Long Beach, MS)"
     };
 
-    const profanity = ["profanity1", "profanity2", "racialslur1"]; // Add actual filter words here
-
     let currentPage = 0;
 
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
-
-    // Logic for "Both" checkboxes
+    // Helper: Logic for Checkboxes (Both vs Single)
     document.querySelectorAll('.logic-group').forEach(el => {
         el.addEventListener('change', function() {
             if (this.checked) {
-                const group = this.getAttribute('data-group');
-                document.querySelector(`.logic-both[data-group="${group}"]`).checked = false;
+                const g = this.getAttribute('data-group');
+                const both = document.querySelector(`.logic-both[data-group="${g}"]`);
+                if(both) both.checked = false;
             }
         });
     });
@@ -370,68 +372,83 @@
     document.querySelectorAll('.logic-both').forEach(el => {
         el.addEventListener('change', function() {
             if (this.checked) {
-                const group = this.getAttribute('data-group');
-                document.querySelectorAll(`.logic-group[data-group="${group}"]`).forEach(cb => cb.checked = false);
+                const g = this.getAttribute('data-group');
+                document.querySelectorAll(`.logic-group[data-group="${g}"]`).forEach(cb => cb.checked = false);
             }
         });
     });
 
     // Real-time Validation Engine
     function validate() {
-        let isPageValid = true;
+        let isValid = true;
         const nextBtn = document.getElementById('nextBtn');
 
-        // Page 0 Validation
+        // Page 0: Scouter & Team
         if (currentPage === 0) {
-            const name = document.getElementById('scouterName').value.trim();
-            const team = document.getElementById('teamNum').value;
+            const nameInput = document.getElementById('scouterName');
+            const teamInput = document.getElementById('teamNum');
             const sWarn = document.getElementById('scouterWarn');
             const tWarn = document.getElementById('teamWarn');
             const tInfo = document.getElementById('teamInfo');
 
-            if (name.length < 2) { sWarn.innerText = "Name too short"; isPageValid = false; }
-            else if (profanity.some(word => name.toLowerCase().includes(word))) { sWarn.innerText = "Invalid Language"; isPageValid = false; }
-            else { sWarn.innerText = ""; }
+            // Profanity Check
+            if (badWords.some(w => nameInput.value.toLowerCase().includes(w))) {
+                sWarn.innerText = "⚠ INAPPROPRIATE LANGUAGE DETECTED";
+                isValid = false;
+            } else if (nameInput.value.trim() === "") {
+                sWarn.innerText = "Name is required";
+                isValid = false;
+            } else { sWarn.innerText = ""; }
 
-            if (!teams[team]) { tWarn.innerText = "Unknown Team Number"; tInfo.innerText = ""; isPageValid = false; }
-            else { tWarn.innerText = ""; tInfo.innerText = "✓ " + teams[team]; }
+            // Team Check
+            if (!teams[teamInput.value]) {
+                tWarn.innerText = "Team not in list";
+                tInfo.style.display = "none";
+                isValid = false;
+            } else {
+                tWarn.innerText = "";
+                tInfo.innerText = "✓ " + teams[teamInput.value];
+                tInfo.style.display = "block";
+            }
         }
 
-        // Page 1 Validation
+        // Page 1: Robot Stats
         if (currentPage === 1) {
             const drive = document.getElementById('driveType').value;
-            const maxCap = document.getElementById('maxCap').value;
-            if (!drive) { document.getElementById('driveWarn').innerText = "Selection Required"; isPageValid = false; }
+            const cap = document.getElementById('maxCap').value;
+            if (!drive) { document.getElementById('driveWarn').innerText = "Select Drive Type"; isValid = false; }
             else { document.getElementById('driveWarn').innerText = ""; }
-            if (!maxCap || maxCap < 1) { document.getElementById('capWarn').innerText = "Enter valid capacity"; isPageValid = false; }
+            if (!cap || cap < 1) { document.getElementById('capWarn').innerText = "Capacity required"; isValid = false; }
             else { document.getElementById('capWarn').innerText = ""; }
         }
 
-        // Page 2 Validation
+        // Page 2: Auto
         if (currentPage === 2) {
-            const preload = parseInt(document.getElementById('preload').value);
-            const maxCap = parseInt(document.getElementById('maxCap').value);
-            if (preload > maxCap) { document.getElementById('preloadWarn').innerText = "Cannot exceed Max Capacity ("+maxCap+")"; isPageValid = false; }
-            else { document.getElementById('preloadWarn').innerText = ""; }
+            const pre = parseInt(document.getElementById('preload').value) || 0;
+            const max = parseInt(document.getElementById('maxCap').value) || 0;
+            if (pre > max) { 
+                document.getElementById('preloadWarn').innerText = `EXCEEDS CAPACITY (MAX ${max})`; 
+                isValid = false; 
+            } else { document.getElementById('preloadWarn').innerText = ""; }
         }
 
-        // Page 3 Validation
+        // Page 3: Teleop/Notes
         if (currentPage === 3) {
-            const notes = document.getElementById('notes').value;
-            if (profanity.some(word => notes.toLowerCase().includes(word))) { 
-                document.getElementById('notesWarn').innerText = "Invalid Language in Notes"; 
-                isPageValid = false; 
+            const noteVal = document.getElementById('notes').value;
+            if (badWords.some(w => noteVal.toLowerCase().includes(w))) {
+                document.getElementById('notesWarn').innerText = "⚠ INAPPROPRIATE LANGUAGE DETECTED";
+                isValid = false;
             } else { document.getElementById('notesWarn').innerText = ""; }
         }
 
-        nextBtn.disabled = !isPageValid;
-        return isPageValid;
+        nextBtn.disabled = !isValid;
+        return isValid;
     }
 
-    // Attach validation to all inputs
-    document.querySelectorAll('input, select, textarea').forEach(input => {
-        input.addEventListener('input', validate);
-        input.addEventListener('change', validate);
+    // Bind real-time events
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.addEventListener('input', validate);
+        el.addEventListener('change', validate);
     });
 
     function changePage(dir) {
@@ -442,9 +459,13 @@
         document.getElementById(`page${currentPage}`).classList.add('active');
 
         document.getElementById('prevBtn').style.visibility = (currentPage === 0) ? 'hidden' : 'visible';
-        document.getElementById('nextBtn').innerText = (currentPage === 4) ? 'Finish' : 'Next';
-        if (currentPage === 4) document.getElementById('nextBtn').style.display = 'none';
-        else document.getElementById('nextBtn').style.display = 'block';
+        
+        if (currentPage === 4) {
+            document.getElementById('nextBtn').style.display = 'none';
+        } else {
+            document.getElementById('nextBtn').style.display = 'block';
+            document.getElementById('nextBtn').innerText = 'Next';
+        }
 
         validate();
         window.scrollTo(0,0);
@@ -452,60 +473,41 @@
 
     function generateQR() {
         const formData = new FormData(document.getElementById('scoutingForm'));
-        const data = {
-            meta: {
-                scouter: document.getElementById('scouterName').value,
-                team: document.getElementById('teamNum').value,
-                timestamp: new Date().toISOString()
-            },
-            robot: {
-                drive: document.getElementById('driveType').value,
-                weight: document.getElementById('weight').value,
-                cap: document.getElementById('maxCap').value,
-                intake: Array.from(formData.getAll('intake')),
-                vision: Array.from(formData.getAll('vision')),
-                shoot: Array.from(formData.getAll('shoot'))
-            },
-            auto: {
-                preload: document.getElementById('preload').value,
-                source: Array.from(formData.getAll('autoSource')),
-                balls: document.getElementById('autoBalls').value,
-                cross: document.getElementById('crossMid').checked
-            },
-            tele: {
-                level: document.getElementById('climbLevel').value,
-                pos: Array.from(formData.getAll('climbPos')),
-                time: document.getElementById('climbTime').value,
-                notes: document.getElementById('notes').value
-            }
+        const pack = {
+            s: document.getElementById('scouterName').value,
+            t: document.getElementById('teamNum').value,
+            d: document.getElementById('driveType').value,
+            w: document.getElementById('weight').value,
+            c: document.getElementById('maxCap').value,
+            in: Array.from(formData.getAll('intake')),
+            vs: Array.from(formData.getAll('vision')),
+            st: Array.from(formData.getAll('shoot')),
+            pr: document.getElementById('preload').value,
+            src: Array.from(formData.getAll('autoSource')),
+            ab: document.getElementById('autoBalls').value,
+            cm: document.getElementById('crossMid').checked,
+            cl: document.getElementById('climbLevel').value,
+            cp: Array.from(formData.getAll('climbPos')),
+            ct: document.getElementById('climbTime').value,
+            nt: document.getElementById('notes').value
         };
 
-        const qrContainer = document.getElementById("qrcode");
-        qrContainer.innerHTML = "";
-        new QRCode(qrContainer, {
-            text: JSON.stringify(data),
+        const qrTarget = document.getElementById("qrcode");
+        qrTarget.innerHTML = "";
+        new QRCode(qrTarget, {
+            text: JSON.stringify(pack),
             width: 250,
-            height: 250,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.M
+            height: 250
         });
     }
 
     function resetForm() {
-        if(confirm("Are you sure? This will wipe all data for the current robot.")){
-            document.getElementById('scoutingForm').reset();
-            document.getElementById('qrcode').innerHTML = "";
-            currentPage = 0;
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('page0').classList.add('active');
-            document.getElementById('prevBtn').style.visibility = 'hidden';
-            document.getElementById('nextBtn').style.display = 'block';
-            validate();
+        if(confirm("Confirm: Wipe all current form data?")){
+            location.reload();
         }
     }
 
-    // Initialize
+    // Init
     document.getElementById('prevBtn').style.visibility = 'hidden';
     validate();
 </script>
