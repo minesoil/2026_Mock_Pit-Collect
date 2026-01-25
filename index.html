@@ -140,7 +140,15 @@
         .btn:active { transform: scale(0.98); }
         .btn-back { background: #2a2a2a; color: #fff; }
         .btn-next { background: var(--accent); color: #000; }
-        .btn-next:disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
+        
+        /* Disabled State (Greyed Out) */
+        .btn-next:disabled { 
+            background: #444; 
+            color: #888; 
+            opacity: 0.7; 
+            cursor: not-allowed; 
+            box-shadow: none;
+        }
 
         /* --- Utility --- */
         .team-display { margin-top: 10px; font-size: 0.9rem; font-weight: bold; color: var(--accent); display: inline-block; padding: 5px 10px; background: rgba(255,215,0,0.1); border-radius: 8px; }
@@ -185,7 +193,7 @@
                 <label>Team Number (隊伍編號)</label>
                 <input type="number" id="teamNum" placeholder="e.g. 6998">
                 <div id="teamNameDisplay" class="team-display">Waiting for input...</div>
-                <div class="error-msg" id="err-team">Team Number Required</div>
+                <div class="error-msg" id="err-team">Unknown or Invalid Team Number</div>
             </div>
         </div>
 
@@ -225,7 +233,7 @@
                         Pneumatic
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="intake" value="Both" class="exclusive-check-all" data-group="intake">
+                        <input type="checkbox" name="intake" value="Both" class="exclusive-check" data-group="intake">
                         Both
                     </label>
                 </div>
@@ -243,7 +251,7 @@
                         AprilTag
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="vision" value="Both" class="exclusive-check-all" data-group="vis">
+                        <input type="checkbox" name="vision" value="Both" class="exclusive-check" data-group="vis">
                         Both
                     </label>
                 </div>
@@ -304,24 +312,25 @@
 
             <div class="card">
                 <label class="toggle-btn" style="width:100%;">
-                    <input type="checkbox" id="crossMid">
+                    <input type="checkbox" id="crossMid" onchange="toggleTerrainSection()">
                     Cross Midfield (會不會過中場)
                 </label>
             </div>
 
-            <div class="card">
+            <div class="card" id="terrainCard" style="display:none;">
                 <label>Terrain Navigation (地形)</label>
                 <div class="grid-select">
                     <label class="toggle-btn">
-                        <input type="checkbox" name="terrain" value="Bump" onchange="checkStability()">
+                        <input type="checkbox" name="terrain" value="Bump" class="exclusive-check" data-group="terrain">
                         Bump
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="terrain" value="Trench">
+                        <input type="checkbox" name="terrain" value="Trench" class="exclusive-check" data-group="terrain">
+                        Trench
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="terrain" value="Both" onchange="checkStability()">
-                        Bump
+                        <input type="checkbox" name="terrain" value="Both" class="exclusive-check" data-group="terrain">
+                        Both
                     </label>
                 </div>
 
@@ -430,7 +439,7 @@
 
 <script>
     /* --- CONFIGURATION --- */
-    // TEAM LIST - LAUREL, MS (Corrected)
+    // TEAM LIST - LAUREL, MS
     const TEAM_LIST = {
         364: "Team Fusion",
         456: "Siege Robotics",
@@ -485,41 +494,58 @@
     const BAD_WORDS = ["damn", "hell", "shit", "fuck", "bitch", "crap", "ass", "bastard", "dick", "piss", "cock", "pussy", "slut", "whore", "nigger", "fag", "retard", "sex", "nude", "gyatt", "skibidi", "rizz"];
     
     let currentPage = 0;
-    const totalPages = 5; // 0 to 4
     let robotsScouted = 0;
 
     /* --- LOGIC HANDLERS --- */
     
-    // Checkbox Logic: "Both" vs Individual
-    document.querySelectorAll('input[type="checkbox"]').forEach(box => {
+    // Checkbox Logic: Exclusive Selection within Group (Choose One OR Both)
+    document.querySelectorAll('.exclusive-check').forEach(box => {
         box.addEventListener('change', (e) => {
             const group = e.target.dataset.group;
-            if(!group) return; // Only apply to grouped items
+            if(!group) return; 
 
-            const allInGroup = document.querySelectorAll(`input[data-group="${group}"]`);
-            const isBoth = e.target.classList.contains('exclusive-check-all');
-
-            if (isBoth && e.target.checked) {
-                // If "Both" clicked, uncheck others
-                allInGroup.forEach(el => { if(el !== e.target) el.checked = false; });
-            } else if (!isBoth && e.target.checked) {
-                // If specific item clicked, uncheck "Both"
-                allInGroup.forEach(el => { if(el.classList.contains('exclusive-check-all')) el.checked = false; });
+            if (e.target.checked) {
+                // Uncheck all other boxes in the same group
+                document.querySelectorAll(`input[data-group="${group}"]`).forEach(el => { 
+                    if(el !== e.target) el.checked = false; 
+                });
+            }
+            
+            // Special check for Terrain stability trigger
+            if(group === 'terrain') {
+                checkStability();
             }
         });
     });
 
+    // Terrain Visibility Logic
+    function toggleTerrainSection() {
+        const crossMid = document.getElementById('crossMid').checked;
+        const card = document.getElementById('terrainCard');
+        
+        if(crossMid) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+            // Reset terrain inputs when hidden
+            document.querySelectorAll('input[name="terrain"]').forEach(cb => cb.checked = false);
+            checkStability(); 
+        }
+    }
+
     // Stability Slider Visibility
     function checkStability() {
         const terrainOpts = Array.from(document.querySelectorAll('input[name="terrain"]:checked')).map(cb => cb.value);
+        // Show stability if Bump OR Both is selected
         const needsStable = terrainOpts.includes('Bump') || terrainOpts.includes('Both');
         document.getElementById('stabilityBox').style.display = needsStable ? 'block' : 'none';
     }
 
-    // Team Number Lookup
+    // Team Number Lookup & Real-time Validtion
     document.getElementById('teamNum').addEventListener('input', function() {
         const num = this.value;
         const disp = document.getElementById('teamNameDisplay');
+        
         if(TEAM_LIST[num]) {
             disp.textContent = "✓ " + TEAM_LIST[num];
             disp.style.color = "#000";
@@ -529,7 +555,11 @@
             disp.style.color = num ? "var(--text-secondary)" : "var(--accent)";
             disp.style.background = "rgba(255,255,255,0.05)";
         }
+        updateNavButtons(); // Check validity immediately
     });
+
+    document.getElementById('scouterName').addEventListener('input', updateNavButtons);
+    document.getElementById('notes').addEventListener('input', updateNavButtons);
 
     // Profanity Checker
     function containsProfanity(text) {
@@ -540,8 +570,53 @@
 
     /* --- NAVIGATION & VALIDATION --- */
 
+    function updateNavButtons() {
+        // This function enables/disables the Next button in real-time
+        const nextBtn = document.getElementById('nextBtn');
+        let isValid = true;
+
+        if (currentPage === 0) {
+            const name = document.getElementById('scouterName').value.trim();
+            const team = document.getElementById('teamNum').value.trim();
+            
+            // Profanity Check
+            if(containsProfanity(name)) {
+                document.getElementById('profanity-name').style.display = 'block';
+                document.getElementById('scouterName').classList.add('violation');
+                isValid = false;
+            } else {
+                document.getElementById('profanity-name').style.display = 'none';
+                document.getElementById('scouterName').classList.remove('violation');
+            }
+
+            // Name Length Check
+            if (name.length < 2) isValid = false;
+
+            // Unknown Team Check
+            if (!TEAM_LIST[team]) {
+                document.getElementById('err-team').style.display = team ? 'block' : 'none'; // Show error if typed but invalid
+                isValid = false;
+            } else {
+                document.getElementById('err-team').style.display = 'none';
+            }
+        }
+        else if (currentPage === 3) {
+             const notes = document.getElementById('notes').value;
+             if(containsProfanity(notes)) {
+                document.getElementById('profanity-notes').style.display = 'block';
+                document.getElementById('notes').classList.add('violation');
+                isValid = false;
+             } else {
+                document.getElementById('profanity-notes').style.display = 'none';
+                document.getElementById('notes').classList.remove('violation');
+             }
+        }
+
+        nextBtn.disabled = !isValid;
+    }
+
     function navigate(dir) {
-        if (dir === 1 && !validatePage(currentPage)) return;
+        if (dir === 1 && document.getElementById('nextBtn').disabled) return; // Double check
 
         document.getElementById(`page${currentPage}`).classList.remove('active');
         currentPage += dir;
@@ -555,64 +630,10 @@
             prepareReview();
         } else {
             document.getElementById('nextBtn').style.display = 'block';
+            updateNavButtons(); // Re-evaluate button state for new page
         }
         
         window.scrollTo(0,0);
-    }
-
-    function validatePage(page) {
-        let valid = true;
-        // Page 0 Validation
-        if (page === 0) {
-            const nameInput = document.getElementById('scouterName');
-            const name = nameInput.value.trim();
-            const team = document.getElementById('teamNum').value.trim();
-            
-            // Name Checks
-            if(name.length < 2) {
-                document.getElementById('err-name').style.display = 'block'; valid = false;
-            } else { document.getElementById('err-name').style.display = 'none'; }
-            
-            // Profanity Check Name
-            if(containsProfanity(name)) {
-                 document.getElementById('profanity-name').style.display = 'block';
-                 nameInput.classList.add('violation');
-                 valid = false;
-            } else {
-                 document.getElementById('profanity-name').style.display = 'none';
-                 nameInput.classList.remove('violation');
-            }
-
-            // Team Check
-            if(!team) {
-                document.getElementById('err-team').style.display = 'block'; valid = false;
-            } else { document.getElementById('err-team').style.display = 'none'; }
-        }
-
-        // Page 2 Validation (Preload)
-        if (page === 2) {
-            const preload = parseInt(document.getElementById('preload').value) || 0;
-            if(preload > 8) {
-                document.getElementById('err-preload').style.display = 'block'; valid = false;
-            } else { document.getElementById('err-preload').style.display = 'none'; }
-        }
-
-        // Page 3 Validation (Notes Profanity)
-        if (page === 3) {
-            const notesInput = document.getElementById('notes');
-            const notes = notesInput.value;
-            
-            if(containsProfanity(notes)) {
-                document.getElementById('profanity-notes').style.display = 'block';
-                notesInput.classList.add('violation');
-                valid = false;
-            } else {
-                document.getElementById('profanity-notes').style.display = 'none';
-                notesInput.classList.remove('violation');
-            }
-        }
-
-        return valid;
     }
 
     /* --- QR GENERATION --- */
@@ -638,12 +659,6 @@
     }
 
     function generateQR() {
-        // Double check profanity one last time
-        if(containsProfanity(document.getElementById('scouterName').value) || containsProfanity(document.getElementById('notes').value)) {
-            alert("Please remove inappropriate language before generating.");
-            return;
-        }
-
         robotsScouted++;
         document.getElementById('robotCounter').innerText = "ROBOTS: " + robotsScouted;
 
@@ -719,8 +734,14 @@
         document.getElementById('teamNameDisplay').textContent = "Waiting for input...";
         document.getElementById('teamNameDisplay').style.background = "rgba(255,255,255,0.05)";
         document.getElementById('teamNameDisplay').style.color = "var(--text-secondary)";
-        checkStability();
+        
+        // Reset Terrain hidden state
+        toggleTerrainSection();
+        updateNavButtons();
     }
+    
+    // Initial run to set button state
+    updateNavButtons();
 </script>
 
 </body>
