@@ -527,33 +527,31 @@
 
 <script>
     /* =========================================
-       JSON DATA KEY (QR CODE DICTIONARY)
+       TSV DATA ORDER (FOR QR DECODING)
        
-       t    : Team Number
-       sc   : Scouter Name
-       dt   : Drive/Chassis Type
-       wt   : Weight (lbs)
-       mx   : Max Piece Capacity
-       in   : Intake Mechanism (Array/String)
-       visH : Vision Hardware (Limelight, etc)
-       visS : Vision Software (Tags, Object, etc)
-       sht  : Shooting Capability
-       tur  : Turret Capability
-       
-       stL  : Starting Location (Enum)
-       pre  : Preload Count
-       auInt: Auto Intake (0/1)
-       auHng: Auto Hang (0/1)
-       at   : Auto Total Pieces Scored
-       mid  : Crossed Midfield (1 = Yes, 0 = No)
-       ter  : Terrain Type (String list)
-       stb  : Stability Rating (1-5)
-       
-       cLv  : Climb Level (L1, L2, L3)
-       cPs  : Climb Position (Left, Right, Center)
-       cTm  : Climb Time (seconds)
-       ph   : Photos Taken (1 = Yes, 0 = No)
-       nt   : Notes
+       0: Team Number
+       1: Scouter Name
+       2: Chassis
+       3: Weight
+       4: Capacity
+       5: Intake
+       6: Vision Hardware
+       7: Vision Software
+       8: Shooting
+       9: Turret
+       10: Start Location
+       11: Preload
+       12: Auto Intake (0/1)
+       13: Auto Hang (0/1)
+       14: Auto Total
+       15: Cross Mid (0/1)
+       16: Terrain
+       17: Stability (1-5)
+       18: Climb Level
+       19: Climb Position
+       20: Climb Time
+       21: Photos Taken (0/1)
+       22: Notes
     ========================================= */
 
     /* --- CONFIGURATION --- */
@@ -915,9 +913,10 @@
         const teamNum = document.getElementById('teamNum').value;
         
         // Construct Data Object
+        // We sanitize inputs here (remove tabs and newlines) to prevent breaking TSV format
         const data = {
             t: parseInt(teamNum),
-            sc: document.getElementById('scouterName').value,
+            sc: document.getElementById('scouterName').value.replace(/\t/g, ' ').replace(/\n/g, ' '),
             dt: document.getElementById('chassis').value,
             wt: document.getElementById('weight').value,
             mx: document.getElementById('capacity').value,
@@ -940,13 +939,23 @@
             cPs: getMultiValues('climbPos'),
             cTm: document.getElementById('climbTime').value,
             ph: document.getElementById('photosTaken').checked ? 1 : 0,
-            nt: document.getElementById('notes').value
+            nt: document.getElementById('notes').value.replace(/\t/g, ' ').replace(/\n/g, ' ')
         };
 
-        const jsonStr = JSON.stringify(data);
+        // Create TSV Array (Strict Order)
+        const tsvValues = [
+            data.t, data.sc, data.dt, data.wt, data.mx, 
+            data.in, data.visH, data.visS, data.sht, data.tur,
+            data.stL, data.pre, data.auInt, data.auHng, data.at, 
+            data.mid, data.ter, data.stb, 
+            data.cLv, data.cPs, data.cTm, data.ph, data.nt
+        ];
+
+        // Join with Tabs
+        const tsvString = tsvValues.join('\t');
         
-        // COMPRESSION LOGIC ADDED HERE
-        const compressed = LZString.compressToBase64(jsonStr);
+        // Compress using LZ-String
+        const compressed = LZString.compressToBase64(tsvString);
 
         // Clear previous QR
         document.getElementById('qrcode').innerHTML = "";
