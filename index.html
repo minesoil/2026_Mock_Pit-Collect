@@ -1,17 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>6998 | 2026 Pit Scout</title>
+    <title>6998 | 2026 Pit Collect</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
         /* --- CSS VARIABLES (THEME CONFIGURATION) --- */
-        /* Changing these hex codes will update the color scheme across the entire app */
         :root {
             --bg-deep: #050505;       /* The darkest background (body) */
             --bg-card: #141419;       /* The background for question cards */
@@ -201,12 +199,19 @@
             font-weight: bold;
             text-align: center;
         }
+
+        /* For "Other" text inputs that appear conditionally */
+        .conditional-input {
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>6998 | 2026 Pit Scout</h1>
+    <h1>6998 | 2026 Pit Collect</h1>
     <div class="counter-badge" id="robotCounter">ROBOTS: 0</div>
 </header>
 
@@ -259,34 +264,58 @@
                 <label>Intake Mechanism (Intake)</label>
                 <div class="grid-select">
                     <label class="toggle-btn">
-                        <input type="checkbox" name="intake" value="Roller" class="exclusive-check" data-group="intake">
+                        <input type="checkbox" name="intake" value="Roller">
                         Roller
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="intake" value="Pneumatic" class="exclusive-check" data-group="intake">
+                        <input type="checkbox" name="intake" value="Pneumatic">
                         Pneumatic
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="intake" value="Both" class="exclusive-check" data-group="intake">
-                        Both
+                        <input type="checkbox" name="intakeOtherTrigger" id="intakeOtherTrigger">
+                        Other (其他)
                     </label>
+                </div>
+                <div class="conditional-input" id="intakeOtherBox">
+                    <input type="text" id="intakeOtherVal" placeholder="Describe intake type...">
                 </div>
             </div>
 
             <div class="card">
-                <label>Vision System (視覺/相機)</label>
+                <label>Vision Hardware (視覺硬體)</label>
                 <div class="grid-select">
                     <label class="toggle-btn">
-                        <input type="checkbox" name="vision" value="Limelight" class="exclusive-check" data-group="vis">
+                        <input type="checkbox" name="visionHard" value="Limelight">
                         Limelight
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="vision" value="AprilTag" class="exclusive-check" data-group="vis">
-                        AprilTag
+                        <input type="checkbox" name="visionHard" value="PhotonCamera">
+                        Photon Camera
+                    </label>
+                     <label class="toggle-btn">
+                        <input type="checkbox" name="visOtherTrigger" id="visOtherTrigger">
+                        Other (其他)
+                    </label>
+                </div>
+                <div class="conditional-input" id="visOtherBox">
+                    <input type="text" id="visOtherVal" placeholder="Describe camera/vision...">
+                </div>
+            </div>
+
+            <div class="card">
+                <label>Vision Capabilities (相機功能)</label>
+                 <div class="grid-select">
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="visionSoft" value="ObjDetect">
+                        Object Detection
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="vision" value="Both" class="exclusive-check" data-group="vis">
-                        Both
+                        <input type="checkbox" name="visionSoft" value="AprilTag">
+                        AprilTag
+                    </label>
+                     <label class="toggle-btn">
+                        <input type="checkbox" name="visionSoft" value="DriverCam">
+                        Driver Cam
                     </label>
                 </div>
             </div>
@@ -325,10 +354,12 @@
 
             <div class="card">
                 <label>Starting Location (位子)</label>
+                <span class="sub-label">Does the Robot start at Outpost, or is it for Human Player?</span>
                 <select id="startPos">
-                    <option value="RobotOutpost">Robot Outpost</option>
-                    <option value="HumanOutpost">Human Outpost</option>
-                    <option value="Depot">Depot</option>
+                    <option value="StartLine">Start Line (Anywhere)</option>
+                    <option value="OutpostRobot">Outpost (Robot Starts Here)</option>
+                    <option value="OutpostHuman">Outpost (Human Player Only)</option>
+                    <option value="Depot">Depot Side</option>
                 </select>
 
                 <br><br>
@@ -336,6 +367,20 @@
                 <span class="sub-label">Maximum 8</span>
                 <input type="number" id="preload" placeholder="0" max="8">
                 <div class="error-msg" id="err-preload">Max Preload is 8</div>
+            </div>
+
+             <div class="card">
+                <label style="display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" id="autoIntake" style="width:25px; height:25px; accent-color:var(--accent);">
+                    <span>Auto Intake from Outpost/Depot? (自動階段去吸球)</span>
+                </label>
+            </div>
+
+            <div class="card">
+                <label style="display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" id="autoHang" style="width:25px; height:25px; accent-color:var(--accent);">
+                    <span>Auto Hang L1? (自動階段掛L1)</span>
+                </label>
             </div>
 
             <div class="card">
@@ -355,16 +400,16 @@
                 <label>Terrain Navigation (地形)</label>
                 <div class="grid-select">
                     <label class="toggle-btn">
-                        <input type="checkbox" name="terrain" value="Bump" class="exclusive-check" data-group="terrain">
+                        <input type="checkbox" name="terrain" value="Bump" id="terrainBump" onchange="checkStability()">
                         Bump
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="terrain" value="Trench" class="exclusive-check" data-group="terrain">
+                        <input type="checkbox" name="terrain" value="Trench">
                         Trench
                     </label>
                     <label class="toggle-btn">
-                        <input type="checkbox" name="terrain" value="Both" class="exclusive-check" data-group="terrain">
-                        Both
+                        <input type="checkbox" name="terrain" value="Flat">
+                        Flat/Open
                     </label>
                 </div>
 
@@ -475,25 +520,26 @@
     /* =========================================
        JSON DATA KEY (QR CODE DICTIONARY)
        
-       To keep the QR code small and easy to scan, 
-       we use short variable names in the JSON data.
-       Here is what each key stands for:
-
        t    : Team Number
        sc   : Scouter Name
-       dt   : Drive/Chassis Type (Swerve, Tank, etc.)
+       dt   : Drive/Chassis Type
        wt   : Weight (lbs)
        mx   : Max Piece Capacity
-       in   : Intake Type (Roller, Pneumatic)
-       vis  : Vision System (Limelight, AprilTag)
-       sht  : Shooting Capability (Move & Shoot, etc.)
-       tur  : Turret Capability (Yaw, Pitch)
-       stL  : Starting Location (Auto)
+       in   : Intake Mechanism (Array/String)
+       visH : Vision Hardware (Limelight, etc)
+       visS : Vision Software (Tags, Object, etc)
+       sht  : Shooting Capability
+       tur  : Turret Capability
+       
+       stL  : Starting Location (Enum)
        pre  : Preload Count
+       auInt: Auto Intake (0/1)
+       auHng: Auto Hang (0/1)
        at   : Auto Total Pieces Scored
        mid  : Crossed Midfield (1 = Yes, 0 = No)
-       ter  : Terrain Type (Bump, Trench)
+       ter  : Terrain Type (String list)
        stb  : Stability Rating (1-5)
+       
        cLv  : Climb Level (L1, L2, L3)
        cPs  : Climb Position (Left, Right, Center)
        cTm  : Climb Time (seconds)
@@ -503,7 +549,6 @@
 
     /* --- CONFIGURATION --- */
     // TEAM LIST: You must update this list for every specific competition!
-    // Format: Team Number: "Team Name"
     const TEAM_LIST = {
         364: "Team Fusion",
         456: "Siege Robotics",
@@ -554,33 +599,41 @@
         11345: "Long Beach RoboBearcats"
     };
 
-    // BAD WORDS LIST (Basic Filter to keep data clean)
+    // BAD WORDS LIST
     const BAD_WORDS = ["damn", "hell", "shit", "fuck", "bitch", "crap", "ass", "bastard", "dick", "piss", "cock", "pussy", "slut", "whore", "nigger", "fag", "retard", "sex", "nude", "gyatt", "skibidi", "rizz"];
     
     // State Variables
     let currentPage = 0; // Starts at 0 (Step 1)
-    let robotsScouted = 0; // Keeps track of how many QR codes generated
-
+    
     /* --- LOGIC HANDLERS --- */
     
-    // Logic to handle exclusive checkboxes (where you can select "Both" OR specific items)
+    // 1. Toggle "Other" text boxes
+    function setupOtherToggle(triggerId, boxId) {
+        document.getElementById(triggerId).addEventListener('change', function(e) {
+            const box = document.getElementById(boxId);
+            if(e.target.checked) {
+                box.style.display = 'block';
+                box.querySelector('input').focus();
+            } else {
+                box.style.display = 'none';
+                box.querySelector('input').value = ''; // Clear input if unchecked
+            }
+        });
+    }
+
+    setupOtherToggle('intakeOtherTrigger', 'intakeOtherBox');
+    setupOtherToggle('visOtherTrigger', 'visOtherBox');
+
+    // 2. Logic to handle exclusive checkboxes (where needed) - Keep existing exclusive checks if any remain
     document.querySelectorAll('.exclusive-check').forEach(box => {
         box.addEventListener('change', (e) => {
             const group = e.target.dataset.group;
             if(!group) return; 
 
             if (e.target.checked) {
-                // If a user checks a box, uncheck others in the same group 
-                // (Note: This logic enforces single selection visual behavior if needed, 
-                // currently allows multiples unless strict logic applies)
                 document.querySelectorAll(`input[data-group="${group}"]`).forEach(el => { 
                     if(el !== e.target) el.checked = false; 
                 });
-            }
-            
-            // Special check: If this was the Terrain group, we need to see if we should show the Slider
-            if(group === 'terrain') {
-                checkStability();
             }
         });
     });
@@ -595,7 +648,7 @@
             card.style.display = 'block'; // Show
         } else {
             card.style.display = 'none'; // Hide
-            // Reset terrain inputs when hidden so we don't save bad data
+            // Reset terrain inputs when hidden
             document.querySelectorAll('input[name="terrain"]').forEach(cb => cb.checked = false);
             checkStability(); 
         }
@@ -603,11 +656,9 @@
 
     // Function to Show/Hide the Stability Slider
     function checkStability() {
-        // Get all checked boxes in the terrain group
-        const terrainOpts = Array.from(document.querySelectorAll('input[name="terrain"]:checked')).map(cb => cb.value);
-        // Show stability slider only if 'Bump' or 'Both' is selected
-        const needsStable = terrainOpts.includes('Bump') || terrainOpts.includes('Both');
-        document.getElementById('stabilityBox').style.display = needsStable ? 'block' : 'none';
+        // If "Bump" specifically is checked, show stability
+        const bumpChecked = document.getElementById('terrainBump').checked;
+        document.getElementById('stabilityBox').style.display = bumpChecked ? 'block' : 'none';
     }
 
     // Team Number Lookup Logic
@@ -615,13 +666,11 @@
         const num = this.value;
         const disp = document.getElementById('teamNameDisplay');
         
-        // If team exists in our list:
         if(TEAM_LIST[num]) {
             disp.textContent = "✓ " + TEAM_LIST[num];
             disp.style.color = "#000";
             disp.style.background = "var(--accent)";
         } else {
-            // If unknown or empty:
             disp.textContent = num ? "Unknown Team" : "Waiting for input...";
             disp.style.color = num ? "var(--text-secondary)" : "var(--accent)";
             disp.style.background = "rgba(255,255,255,0.05)";
@@ -629,11 +678,9 @@
         updateNavButtons(); // Re-check if we can proceed
     });
 
-    // Listeners to check validity when user types name or notes
     document.getElementById('scouterName').addEventListener('input', updateNavButtons);
     document.getElementById('notes').addEventListener('input', updateNavButtons);
 
-    // Helper: Returns true if text contains a bad word
     function containsProfanity(text) {
         if (!text) return false;
         const lower = text.toLowerCase();
@@ -642,7 +689,6 @@
 
     /* --- NAVIGATION & VALIDATION --- */
 
-    // Checks if the current page is valid. If not, disables the "Next" button.
     function updateNavButtons() {
         const nextBtn = document.getElementById('nextBtn');
         let isValid = true;
@@ -652,7 +698,6 @@
             const name = document.getElementById('scouterName').value.trim();
             const team = document.getElementById('teamNum').value.trim();
             
-            // 1. Check Profanity in Name
             if(containsProfanity(name)) {
                 document.getElementById('profanity-name').style.display = 'block';
                 document.getElementById('scouterName').classList.add('violation');
@@ -662,10 +707,8 @@
                 document.getElementById('scouterName').classList.remove('violation');
             }
 
-            // 2. Check Name Length
             if (name.length < 2) isValid = false;
 
-            // 3. Check Team Number against List
             if (!TEAM_LIST[team]) {
                 document.getElementById('err-team').style.display = team ? 'block' : 'none';
                 isValid = false;
@@ -673,7 +716,6 @@
                 document.getElementById('err-team').style.display = 'none';
             }
         }
-        // Validation for Page 3 (Notes)
         else if (currentPage === 3) {
              const notes = document.getElementById('notes').value;
              if(containsProfanity(notes)) {
@@ -686,157 +728,177 @@
              }
         }
 
-        // Enable or Disable button based on 'isValid'
         nextBtn.disabled = !isValid;
     }
 
-    // Handles moving between pages
-    // dir = 1 (Next), dir = -1 (Back)
     function navigate(dir) {
-        // Prevent moving forward if disabled
         if (dir === 1 && document.getElementById('nextBtn').disabled) return; 
 
-        // Hide current page
         document.getElementById(`page${currentPage}`).classList.remove('active');
-        // Update page number
         currentPage += dir;
-        // Show new page
         document.getElementById(`page${currentPage}`).classList.add('active');
         
-        // Show/Hide Back Button
         document.getElementById('backBtn').style.visibility = currentPage === 0 ? 'hidden' : 'visible';
         
-        // If we reached the last page (Review), prepare the summary
         if(currentPage === 4) {
-            document.getElementById('nextBtn').style.display = 'none'; // Hide Next button
+            document.getElementById('nextBtn').style.display = 'none';
             prepareReview();
         } else {
-            document.getElementById('nextBtn').style.display = 'block'; // Show Next button
-            updateNavButtons(); // Check validation for the new page
+            document.getElementById('nextBtn').style.display = 'block';
+            updateNavButtons();
         }
-        
-        // Scroll to top of screen
         window.scrollTo(0,0);
     }
 
-    /* --- QR GENERATION --- */
-
-    // Helper: Gets values of all checked boxes with a specific name
-    function getVals(name) {
-        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+    /* --- REVIEW & GENERATE --- */
+    
+    // Helper to get multi-select values string
+    function getMultiValues(name, otherId = null) {
+        let vals = [];
+        document.querySelectorAll(`input[name="${name}"]:checked`).forEach(cb => {
+            // If this is the "Other" trigger checkbox, grab text from input instead
+            if(otherId && cb.id.includes('Other')) {
+                const txt = document.getElementById(otherId).value.trim();
+                if(txt) vals.push("Other: " + txt);
+            } else {
+                vals.push(cb.value);
+            }
+        });
+        return vals.join(' + ');
     }
 
-    // Creates the text summary on the final page
     function prepareReview() {
-        const team = document.getElementById('teamNum').value;
-        const name = document.getElementById('scouterName').value;
-        const climb = getVals('climbLvl').join(', ') || "None";
-        const auto = document.getElementById('autoTotal').value || 0;
+        const t = document.getElementById('teamNum').value;
+        const name = TEAM_LIST[t] || "Unknown";
         
-        document.getElementById('reviewText').innerHTML = `
-            <strong style="color:var(--accent)">Team:</strong> ${team} (${TEAM_LIST[team] || 'Unknown'})<br>
-            <strong style="color:var(--accent)">Scouter:</strong> ${name}<br>
-            <strong style="color:var(--accent)">Auto Pieces:</strong> ${auto}<br>
-            <strong style="color:var(--accent)">Climb:</strong> ${climb}<br>
-            <br>
-            <em>Please verify all data before generating QR.</em>
-        `;
+        let html = `<strong>Team ${t} - ${name}</strong><br>`;
+        html += `Scouter: ${document.getElementById('scouterName').value}<br>`;
+        html += `<hr style="border-color:#333; margin:5px 0;">`;
+        
+        // Robot Specs
+        html += `Chassis: ${document.getElementById('chassis').value}<br>`;
+        html += `Intake: ${getMultiValues('intake', 'intakeOtherVal') || 'None'}<br>`;
+        html += `Vision H/W: ${getMultiValues('visionHard', 'visOtherVal') || 'None'}<br>`;
+        html += `Vision S/W: ${getMultiValues('visionSoft') || 'None'}<br>`;
+        
+        // Auto
+        const startMap = {
+            'StartLine': 'Start Line', 'OutpostRobot': 'Outpost (Robot)', 
+            'OutpostHuman': 'Outpost (Human)', 'Depot': 'Depot'
+        };
+        html += `Start: ${startMap[document.getElementById('startPos').value]}<br>`;
+        html += `Auto Intake: ${document.getElementById('autoIntake').checked ? 'Yes' : 'No'}<br>`;
+        html += `Auto Hang: ${document.getElementById('autoHang').checked ? 'Yes' : 'No'}<br>`;
+        
+        // Terrain
+        if(document.getElementById('crossMid').checked) {
+            html += `Terrain: ${getMultiValues('terrain')}<br>`;
+            if(document.getElementById('terrainBump').checked) {
+                html += `Stability: ${document.getElementById('stability').value}/5<br>`;
+            }
+        }
+        
+        document.getElementById('reviewText').innerHTML = html;
     }
 
-    // Generates the QR Code using the JS library
     function generateQR() {
-        robotsScouted++;
-        document.getElementById('robotCounter').innerText = "ROBOTS: " + robotsScouted;
-
-        // 1. Collect all data into a Javascript Object
-        // We use the short keys defined in the Key at the top of the script
+        const teamNum = document.getElementById('teamNum').value;
+        
+        // Construct Data Object
         const data = {
-            // ID
-            t: document.getElementById('teamNum').value,
+            t: parseInt(teamNum),
             sc: document.getElementById('scouterName').value,
-            // Specs
             dt: document.getElementById('chassis').value,
             wt: document.getElementById('weight').value,
             mx: document.getElementById('capacity').value,
-            // Systems
-            in: getVals('intake'),
-            vis: getVals('vision'),
-            sht: getVals('shoot'),
-            tur: getVals('turret'),
-            // Auto
+            in: getMultiValues('intake', 'intakeOtherVal'),
+            visH: getMultiValues('visionHard', 'visOtherVal'),
+            visS: getMultiValues('visionSoft'),
+            sht: getMultiValues('shoot'),
+            tur: getMultiValues('turret'),
+            
             stL: document.getElementById('startPos').value,
             pre: document.getElementById('preload').value,
+            auInt: document.getElementById('autoIntake').checked ? 1 : 0,
+            auHng: document.getElementById('autoHang').checked ? 1 : 0,
             at: document.getElementById('autoTotal').value,
-            mid: document.getElementById('crossMid').checked ? 1 : 0, // Convert boolean to 1/0
-            ter: getVals('terrain'),
+            mid: document.getElementById('crossMid').checked ? 1 : 0,
+            ter: getMultiValues('terrain'),
             stb: document.getElementById('stability').value,
-            // Teleop
-            cLv: getVals('climbLvl'),
-            cPs: getVals('climbPos'),
+            
+            cLv: getMultiValues('climbLvl'),
+            cPs: getMultiValues('climbPos'),
             cTm: document.getElementById('climbTime').value,
             ph: document.getElementById('photosTaken').checked ? 1 : 0,
             nt: document.getElementById('notes').value
         };
 
-        // 2. Clear previous QR code if it exists
-        const qrContainer = document.getElementById('qrcode');
-        qrContainer.innerHTML = "";
-        qrContainer.style.display = "inline-block";
+        const jsonStr = JSON.stringify(data);
         
-        // 3. Create new QR Code
-        new QRCode(qrContainer, {
-            text: JSON.stringify(data), // Convert Object to String
-            width: 240,
-            height: 240,
-            correctLevel: QRCode.CorrectLevel.L // Low error correction (makes QR less dense/easier to scan)
+        // Clear previous QR
+        document.getElementById('qrcode').innerHTML = "";
+        document.getElementById('qrcode').style.display = "block";
+        
+        // Generate new QR
+        new QRCode(document.getElementById("qrcode"), {
+            text: jsonStr,
+            width: 256,
+            height: 256,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.L
         });
-
-        // 4. Disable button to prevent double clicks
-        const btn = document.getElementById('generateBtn');
-        btn.innerText = "QR Generated (Saved)";
-        btn.style.background = "var(--success)";
-        btn.disabled = true;
+        
+        document.getElementById('generateBtn').style.display = 'none'; // Prevent double gen
+        
+        // Update Counter
+        const counter = document.getElementById('robotCounter');
+        let count = parseInt(counter.innerText.split(': ')[1]) + 1;
+        counter.innerText = "ROBOTS: " + count;
     }
 
-    // Resets the form to start over
     function resetForm() {
-        if(!confirm("Are you sure you want to reset? Unsaved data will be lost.")) return;
-        
-        // Native form reset
-        document.getElementById('scoutForm').reset();
-        document.getElementById('qrcode').style.display = 'none';
-        
-        // Clean up visual errors/styles
-        document.querySelectorAll('.violation').forEach(el => el.classList.remove('violation'));
-        document.querySelectorAll('.profanity-alert').forEach(el => el.style.display = 'none');
+        if(confirm("Are you sure you want to clear all form data and return to the start?")) {
+            // 1. Reset the actual form inputs
+            document.getElementById('scoutForm').reset();
+            
+            // 2. Hide "Other" inputs that were toggled open
+            document.getElementById('intakeOtherBox').style.display = 'none';
+            document.getElementById('visOtherBox').style.display = 'none';
+            document.getElementById('terrainCard').style.display = 'none';
+            document.getElementById('stabilityBox').style.display = 'none';
+            
+            // 3. Reset Team Name Display & Slider Text
+            const disp = document.getElementById('teamNameDisplay');
+            disp.textContent = "Waiting for input...";
+            disp.style.color = "var(--accent)";
+            disp.style.background = "rgba(255,255,255,0.05)";
+            document.getElementById('stableVal').innerText = "3";
+            
+            // 4. Reset Error Messages/Validation Styles
+            document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.profanity-alert').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.violation').forEach(el => el.classList.remove('violation'));
+            
+            // 5. Hide QR Code / Reset Generate Button
+            document.getElementById('qrcode').innerHTML = "";
+            document.getElementById('qrcode').style.display = "none";
+            document.getElementById('generateBtn').style.display = 'inline-block';
+            document.getElementById('reviewText').innerHTML = "";
 
-        // Reset Generator Button
-        const btn = document.getElementById('generateBtn');
-        btn.innerText = "Generate QR Code";
-        btn.style.background = "var(--accent)";
-        btn.disabled = false;
-        
-        // Go back to Page 0
-        document.getElementById(`page${currentPage}`).classList.remove('active');
-        currentPage = 0;
-        document.getElementById(`page0`).classList.add('active');
-        document.getElementById('backBtn').style.visibility = 'hidden';
-        document.getElementById('nextBtn').style.display = 'block';
-        
-        // Reset Team Display
-        document.getElementById('teamNameDisplay').textContent = "Waiting for input...";
-        document.getElementById('teamNameDisplay').style.background = "rgba(255,255,255,0.05)";
-        document.getElementById('teamNameDisplay').style.color = "var(--text-secondary)";
-        
-        // Ensure hidden sections are hidden again
-        toggleTerrainSection();
-        updateNavButtons();
+            // 6. Navigate back to Page 0
+            document.querySelector('.page.active').classList.remove('active');
+            currentPage = 0;
+            document.getElementById('page0').classList.add('active');
+            
+            // 7. Update Navigation Buttons
+            document.getElementById('backBtn').style.visibility = 'hidden';
+            document.getElementById('nextBtn').style.display = 'block';
+            updateNavButtons(); // Will disable Next button because fields are empty
+            
+            window.scrollTo(0,0);
+        }
     }
-    
-    // Run this once on load to ensure buttons are in correct state
-    updateNavButtons();
 </script>
-
 </body>
 </html>
-
