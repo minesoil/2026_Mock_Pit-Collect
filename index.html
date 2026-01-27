@@ -6,6 +6,8 @@
     <title>6998 | 2026 Pit Collect</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Added LZ-String Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -943,13 +945,16 @@
 
         const jsonStr = JSON.stringify(data);
         
+        // COMPRESSION LOGIC ADDED HERE
+        const compressed = LZString.compressToBase64(jsonStr);
+
         // Clear previous QR
         document.getElementById('qrcode').innerHTML = "";
         document.getElementById('qrcode').style.display = "block";
         
-        // Generate new QR
+        // Generate new QR with compressed data
         new QRCode(document.getElementById("qrcode"), {
-            text: jsonStr,
+            text: compressed,
             width: 256,
             height: 256,
             colorDark : "#000000",
