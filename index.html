@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>6998 | 2026 Pit Collect</title>
     
+    <!-- QR Code Generation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Added LZ-String Library -->
+    <!-- LZ-String Compression Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
     
@@ -220,6 +221,7 @@
 <div class="container">
     <form id="scoutForm">
 
+        <!-- STEP 1: Identification -->
         <div class="page active" id="page0">
             <div class="section-title">Step 1: Identification</div>
             
@@ -238,6 +240,7 @@
             </div>
         </div>
 
+        <!-- STEP 2: Robot Specs -->
         <div class="page" id="page1">
             <div class="section-title">Step 2: Robot Specifications</div>
 
@@ -355,6 +358,7 @@
             </div>
         </div>
 
+        <!-- STEP 4: Autonomous -->
         <div class="page" id="page2">
             <div class="section-title">Step 4: Autonomous</div>
 
@@ -382,18 +386,48 @@
                 <div class="error-msg" id="err-preload">Max Preload is 8</div>
             </div>
 
+             <!-- CHANGED: Auto Intake (Checklist instead of Single Box) -->
              <div class="card">
-                <label style="display:flex; align-items:center; gap:10px;">
-                    <input type="checkbox" id="autoIntake" style="width:25px; height:25px; accent-color:var(--accent);">
-                    <span>Auto Intake from Outpost/Depot? (自動階段去吸球)</span>
-                </label>
+                <label>Auto Intake Source (自動吸球來源)</label>
+                <div class="grid-select">
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="autoIntakePos" value="Outpost">
+                        Outpost
+                    </label>
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="autoIntakePos" value="Depot">
+                        Depot
+                    </label>
+                </div>
             </div>
 
+            <!-- CHANGED: Auto Hang (Positions checklist like Step 5) -->
             <div class="card">
-                <label style="display:flex; align-items:center; gap:10px;">
-                    <input type="checkbox" id="autoHang" style="width:25px; height:25px; accent-color:var(--accent);">
-                    <span>Auto Hang L1? (自動階段掛L1)</span>
-                </label>
+                <label>Auto Hang Location (自動掛 L1 位置)</label>
+                <div class="grid-select" style="grid-template-columns: repeat(3, 1fr);">
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="autoHangPos" value="Left">
+                        Left<br>左
+                    </label>
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="autoHangPos" value="Center">
+                        Center<br>中
+                    </label>
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="autoHangPos" value="Right">
+                        Right<br>右
+                    </label>
+                </div>
+                <div class="grid-select" style="margin-top:10px;">
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="autoHangPos" value="FarLeft">
+                        Far Left Side (左側)
+                    </label>
+                    <label class="toggle-btn">
+                        <input type="checkbox" name="autoHangPos" value="FarRight">
+                        Far Right Side (右側)
+                    </label>
+                </div>
             </div>
 
             <div class="card">
@@ -412,8 +446,9 @@
             <div class="card" id="terrainCard" style="display:none;">
                 <label>Terrain Navigation (地形)</label>
                 <div class="grid-select">
+                    <!-- CHANGED: Removed checkStability logic -->
                     <label class="toggle-btn">
-                        <input type="checkbox" name="terrain" value="Bump" id="terrainBump" onchange="checkStability()">
+                        <input type="checkbox" name="terrain" value="Bump" id="terrainBump">
                         Bump
                     </label>
                     <label class="toggle-btn">
@@ -421,18 +456,11 @@
                         Trench
                     </label>
                 </div>
-
-                <div id="stabilityBox" style="margin-top:20px; display:none; border-top:1px solid #333; padding-top:15px;">
-                    <label>Bump Stability (過Bump影響)</label>
-                    <span class="sub-label">1 (Very Unstable) - 5 (Very Stable)</span>
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span style="font-weight:bold; color:var(--accent); font-size:1.2rem;" id="stableVal">3</span>
-                        <input type="range" id="stability" min="1" max="5" value="3" oninput="document.getElementById('stableVal').innerText = this.value">
-                    </div>
-                </div>
+                <!-- CHANGED: Removed stability slider box completely -->
             </div>
         </div>
 
+        <!-- STEP 5: Teleop & Endgame -->
         <div class="page" id="page3">
             <div class="section-title">Step 5: Teleop & Endgame</div>
 
@@ -502,6 +530,7 @@
             </div>
         </div>
 
+        <!-- STEP 6: Review -->
         <div class="page" id="page4">
             <div class="section-title">Step 6: Review & Sync</div>
             <div class="card" style="text-align:center;">
@@ -520,6 +549,7 @@
     </form>
 </div>
 
+<!-- Navigation Bar -->
 <div class="nav-bar">
     <button type="button" class="btn btn-back" id="backBtn" onclick="navigate(-1)">Back</button>
     <button type="button" class="btn btn-next" id="nextBtn" onclick="navigate(1)">Next</button>
@@ -541,12 +571,12 @@
        9: Turret
        10: Start Location
        11: Preload
-       12: Auto Intake (0/1)
-       13: Auto Hang (0/1)
+       12: Auto Intake Source (New: String List)
+       13: Auto Hang Location (New: String List)
        14: Auto Total
        15: Cross Mid (0/1)
        16: Terrain
-       17: Stability (1-5)
+       17: Removed (Stability) - Slot deleted
        18: Climb Level
        19: Climb Position
        20: Climb Time
@@ -659,16 +689,10 @@
             card.style.display = 'none'; // Hide
             // Reset terrain inputs when hidden
             document.querySelectorAll('input[name="terrain"]').forEach(cb => cb.checked = false);
-            checkStability(); 
         }
     }
 
-    // Function to Show/Hide the Stability Slider
-    function checkStability() {
-        // If "Bump" specifically is checked, show stability
-        const bumpChecked = document.getElementById('terrainBump').checked;
-        document.getElementById('stabilityBox').style.display = bumpChecked ? 'block' : 'none';
-    }
+    // REMOVED: checkStability() function (Feature deleted as requested)
 
     // Team Number Lookup Logic
     document.getElementById('teamNum').addEventListener('input', function() {
@@ -687,6 +711,7 @@
         updateNavButtons(); // Re-check if we can proceed
     });
 
+    // Event Listeners for Real-time Validation
     document.getElementById('scouterName').addEventListener('input', updateNavButtons);
     document.getElementById('notes').addEventListener('input', updateNavButtons);
     document.getElementById('weight').addEventListener('input', updateNavButtons);
@@ -895,15 +920,15 @@
         
         // Auto
         html += `Start: ${getMultiValues('startPos') || 'None'}<br>`;
-        html += `Auto Intake: ${document.getElementById('autoIntake').checked ? 'Yes' : 'No'}<br>`;
-        html += `Auto Hang: ${document.getElementById('autoHang').checked ? 'Yes' : 'No'}<br>`;
+        // UPDATED: Show list of intake sources
+        html += `Auto Intake Source: ${getMultiValues('autoIntakePos') || 'None'}<br>`;
+        // UPDATED: Show list of hang locations
+        html += `Auto Hang Loc: ${getMultiValues('autoHangPos') || 'None'}<br>`;
         
         // Terrain
         if(document.getElementById('crossMid').checked) {
             html += `Terrain: ${getMultiValues('terrain')}<br>`;
-            if(document.getElementById('terrainBump').checked) {
-                html += `Stability: ${document.getElementById('stability').value}/5<br>`;
-            }
+            // Removed Stability display
         }
         
         document.getElementById('reviewText').innerHTML = html;
@@ -928,12 +953,14 @@
             
             stL: getMultiValues('startPos'),
             pre: document.getElementById('preload').value,
-            auInt: document.getElementById('autoIntake').checked ? 1 : 0,
-            auHng: document.getElementById('autoHang').checked ? 1 : 0,
+            // UPDATED: Now returns a string of selected checkboxes instead of 1/0
+            auInt: getMultiValues('autoIntakePos') || 'None', 
+            // UPDATED: Now returns a string of selected locations instead of 1/0
+            auHng: getMultiValues('autoHangPos') || 'None',
             at: document.getElementById('autoTotal').value,
             mid: document.getElementById('crossMid').checked ? 1 : 0,
             ter: getMultiValues('terrain'),
-            stb: document.getElementById('stability').value,
+            // REMOVED: Stability (stb)
             
             cLv: getMultiValues('climbLvl'),
             cPs: getMultiValues('climbPos'),
@@ -947,7 +974,8 @@
             data.t, data.sc, data.dt, data.wt, data.mx, 
             data.in, data.visH, data.visS, data.sht, data.tur,
             data.stL, data.pre, data.auInt, data.auHng, data.at, 
-            data.mid, data.ter, data.stb, 
+            data.mid, data.ter, 
+            // Removed Stability from array so indices shift down by 1 from here on
             data.cLv, data.cPs, data.cTm, data.ph, data.nt
         ];
 
@@ -989,14 +1017,13 @@
             document.getElementById('visOtherBox').style.display = 'none';
             document.getElementById('visSoftOtherBox').style.display = 'none';
             document.getElementById('terrainCard').style.display = 'none';
-            document.getElementById('stabilityBox').style.display = 'none';
+            // REMOVED: Stability box hiding (element deleted)
             
-            // 3. Reset Team Name Display & Slider Text
+            // 3. Reset Team Name Display
             const disp = document.getElementById('teamNameDisplay');
             disp.textContent = "Waiting for input...";
             disp.style.color = "var(--accent)";
             disp.style.background = "rgba(255,255,255,0.05)";
-            document.getElementById('stableVal').innerText = "3";
             
             // 4. Reset Error Messages/Validation Styles
             document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
