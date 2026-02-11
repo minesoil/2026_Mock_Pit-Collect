@@ -1,3 +1,7 @@
+AI WROTE THIS DESCRIPTION
+
+
+
 FRC 6998 Pit Collect Tool (2026)
 
 This is a standalone, offline-capable web application for collecting Pit Scouting data and Autonomous Paths for the FRC 2026 game. It generates compressed QR codes that can be scanned by the main Scouting App to upload data without needing an internet connection in the pits.
@@ -85,5 +89,6 @@ Photo Capture: Camera integration for robot photos.
 Blue Alliance Integration: Fetch team avatars.
 
 Local Storage History: Save progress locally to prevent data loss.
+
 
 Dark Mode: Theming for different lighting conditions.
