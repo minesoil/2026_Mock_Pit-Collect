@@ -446,12 +446,14 @@
 
             <div class="card">
                 <label class="toggle-btn" style="width:100%;">
-                    <input type="checkbox" id="crossMid" onchange="toggleTerrainSection()">
+                    <!-- Removed onchange="toggleTerrainSection()" so it acts independently -->
+                    <input type="checkbox" id="crossMid">
                     Cross Midfield (會不會過中場)
                 </label>
             </div>
 
-            <div class="card" id="terrainCard" style="display:none;">
+            <!-- Removed style="display:none;" so Terrain is always visible -->
+            <div class="card" id="terrainCard">
                 <label>Terrain Navigation (地形)</label>
                 <div class="grid-select">
                     <label class="toggle-btn">
@@ -611,6 +613,8 @@
        CONFIGURATION & DATA
        ========================================= */
     const TEAM_LIST = {
+        /*
+        // --- OLD TEAMS COMMENTED OUT AS REQUESTED ---
         364: "Team Fusion",
         456: "Siege Robotics",
         538: "Renaissance Robotics",
@@ -658,6 +662,21 @@
         11287: "Canton Career Center",
         11343: "JPS High School Robotics",
         11345: "Long Beach RoboBearcats"
+        */
+        
+        // --- NEW TEAMS ADDED ---
+        6083: "協同中學",
+        6998: "南科實中",
+        7551: "竹崎高中",
+        7636: "中科實中",
+        8020: "建國中學",
+        8169: "岡山高中",
+        8790: "中信高中",
+        8805: "南光中學",
+        9126: "義大高中",
+        10034: "慈心華德福",
+        11229: "高雄社區聯隊",
+        11313: "台中女中"
     };
 
     // Words blocked by the profanity filter
@@ -702,16 +721,11 @@
         });
     });
 
-    // Shows/Hides Terrain section based on "Cross Midfield" toggle
+    // Toggle Logic for Terrain Section (NOW DISABLED/UNUSED)
+    // The section is always visible now, but keeping function to prevent JS errors if called elsewhere
     function toggleTerrainSection() {
-        const crossMid = document.getElementById('crossMid').checked;
-        const card = document.getElementById('terrainCard');
-        if(crossMid) {
-            card.style.display = 'block'; 
-        } else {
-            card.style.display = 'none'; 
-            document.querySelectorAll('input[name="terrain"]').forEach(cb => cb.checked = false);
-        }
+        // Functionality removed as requested.
+        // The terrainCard is no longer hidden by default.
     }
 
     // Displays Team Name when a number is typed
@@ -1273,7 +1287,7 @@
             document.getElementById('intakeOtherBox').style.display = 'none';
             document.getElementById('visOtherBox').style.display = 'none';
             document.getElementById('visSoftOtherBox').style.display = 'none';
-            document.getElementById('terrainCard').style.display = 'none';
+            // Removed terrain card hiding logic
             
             // Reset Displays
             const disp = document.getElementById('teamNameDisplay');
